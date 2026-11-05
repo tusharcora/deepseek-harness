@@ -1064,7 +1064,7 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         returns: 'the saved workflow, or why it cannot be saved.',
       },
       {
-        signature: '@Remote(\'remove\') async remove(id: string): Promise<WorkflowsResult>',
+        signature: '@Remote(\'deleteWorkflow\') async deleteWorkflow(id: string): Promise<WorkflowsResult>',
         description: 'Delete a saved workflow; its past runs stay listed.',
         parameters: [{ name: 'id', description: 'workflow id.' }],
         returns: 'success.',

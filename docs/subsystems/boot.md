@@ -333,7 +333,7 @@ Saved workflows, runs, and the page's Remote.
  * @param id - workflow id.
  * @returns success.
  */
-@Remote('remove') async remove(id: string): Promise<WorkflowsResult>
+@Remote('deleteWorkflow') async deleteWorkflow(id: string): Promise<WorkflowsResult>
 
 /**
  * Start a saved workflow. It runs in the background; the page follows it through `state`.
