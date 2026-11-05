@@ -10,6 +10,7 @@ import {
   discoverPluginDirs,
   parseDevWebArguments,
   StageSupervisor,
+  stageEnvironment,
   watchClientPlugins,
 } from './dev-web.ts'
 import type { StageHandle } from './dev-web.ts'
@@ -71,6 +72,22 @@ describe('StageSupervisor', () => {
     await stopping
     expect(interrupted.signals).toEqual([])
     expect(survivor.signals).toEqual(['SIGTERM'])
+  })
+})
+
+describe('stageEnvironment', () => {
+  it('drops the production NODE_ENV that in-process builds set when the script was launched without one', () => {
+    expect(stageEnvironment({ NODE_ENV: 'production', PATH: '/bin' }, undefined)).toEqual({ PATH: '/bin' })
+  })
+
+  it('keeps the NODE_ENV the script was launched with', () => {
+    expect(stageEnvironment({ NODE_ENV: 'production' }, 'development').NODE_ENV).toBe('development')
+  })
+
+  it('leaves the given environment unchanged', () => {
+    const current = { NODE_ENV: 'production' }
+    stageEnvironment(current, undefined)
+    expect(current).toEqual({ NODE_ENV: 'production' })
   })
 })
 
