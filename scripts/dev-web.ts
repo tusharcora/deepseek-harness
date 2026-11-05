@@ -90,6 +90,24 @@ export interface DevWebArguments {
   readonly appArgs: readonly string[]
 }
 
+/** `NODE_ENV` as this script was launched, before in-process builds default it to `production`. */
+const launchNodeEnv = process.env.NODE_ENV
+
+/**
+ * Environment for one spawned stage: the current environment with `NODE_ENV` as launched. In-process tsdown builds
+ * resolve Vite configuration, which sets an unset `NODE_ENV` to `production`; without this the served Host and every
+ * shell it runs, including test runs, would inherit production mode.
+ * @param environment - current process environment.
+ * @param nodeEnv - `NODE_ENV` at launch; undefined removes it.
+ * @returns a copy with `NODE_ENV` restored.
+ */
+export function stageEnvironment(environment: NodeJS.ProcessEnv, nodeEnv: string | undefined): NodeJS.ProcessEnv {
+  const env = { ...environment }
+  if (nodeEnv === undefined) Reflect.deleteProperty(env, 'NODE_ENV')
+  else env.NODE_ENV = nodeEnv
+  return env
+}
+
 /** Polling interval selected by a bare `--poll`. */
 const DEFAULT_POLL_INTERVAL = 500
 
@@ -306,6 +324,8 @@ function spawnStage(
 ): void {
   const child = execa(command, [...args], {
     cwd: repoRoot,
+    env: stageEnvironment(process.env, launchNodeEnv),
+    extendEnv: false,
     stdio: 'inherit',
     preferLocal: local,
     reject: false,

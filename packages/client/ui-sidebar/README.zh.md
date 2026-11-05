@@ -27,7 +27,7 @@ dsh Web 客户端的侧边栏让用户识别当前构建、启动新会话、将
 <a id="use-this-package"></a>
 ## 使用本包
 
-侧边栏是导航外壳：用户看到品牌、启动新会话、折叠轨道并到达 Settings。功能插件填充它的席位——ui-workspace 填充 `sidebar.workspaces`，ui-settings 在 `sidebar.settings` 注册触发行与设置面板。
+侧边栏是导航外壳：用户看到品牌、启动新会话、折叠轨道并到达 Settings。功能插件填充它的席位——ui-workspace 填充 `sidebar.workspaces`，ui-settings 在 `sidebar.settings` 注册触发行与设置面板，其他插件通过 `sidebar.sections` 列表在 Workspace 上方添加自己的区块。
 
 宽度低于 768px 且没有原生 Windows 顶栏时，侧边栏在框架抽屉内保留展开内容。抽屉首先聚焦收起按钮，并限制键盘焦点范围，支持 Escape 和点击蒙层关闭，并在没有上层弹窗时将焦点还给打开它的控件。打开的抽屉切换为收起图标栏时，仍在展开内容中的焦点会在该内容卸载前转交给图标栏开关。收起的图标栏变为隐藏抽屉时，侧栏将自身焦点转交给顶部展开按钮，保留其他区域和上层弹窗的焦点。这也包括由原侧栏控件的 `aria-controls` 标识的全局菜单中的焦点。关闭的抽屉切回图标栏时，立即使用紧凑布局，不播放交叉淡入淡出。开关的提示气泡在抽屉外渲染。打开抽屉不改变会话宽度。
 
@@ -78,7 +78,7 @@ root 作用域的 `sidebar.panellist.actions` list 有注册项时，导航区�
 <details>
 <summary>实现细节——点击展开</summary>
 
-外壳是纯组合：`SidebarRootComponentProps` 组合布局 owner share、全局 `useSessions` 与 `useWorkspaces` 钩子、已声明的品牌、`sidebar.workspaces` 与 `sidebar.settings` 子 slot，以及注入的导航回调。侧边栏声明 `sidebar.panel.icon` Component Factory，由它拥有 `sidebar.panellist` list；面板行和更多菜单都通过该 factory 渲染面板注册的图标。面板元数据由列表注册和 locale 变化派生；选中态属于布局存储。注入的 `trackEntryClick(attributes)` 转发到 `ctx.get('productAnalytics')?.track('sidebar_menu_click', attributes)`；`selectPanel` 只负责选中，因此由各控件自行提供入口与位置。
+外壳是纯组合：`SidebarRootComponentProps` 组合布局 owner share、全局 `useSessions` 与 `useWorkspaces` 钩子、已声明的品牌、`sidebar.sections`、`sidebar.workspaces` 与 `sidebar.settings` 子 slot，以及注入的导航回调。每个 `sidebar.sections` 条目接收 `{ wide, expandSidebar }`，按 `order` 升序渲染在同一视口内的 Workspace 区域上方，并自行负责标题、行和轨道形态；没有条目渲染时该区域不占空间。侧边栏声明 `sidebar.panel.icon` Component Factory，由它拥有 `sidebar.panellist` list；面板行和更多菜单都通过该 factory 渲染面板注册的图标。面板元数据由列表注册和 locale 变化派生；选中态属于布局存储。注入的 `trackEntryClick(attributes)` 转发到 `ctx.get('productAnalytics')?.track('sidebar_menu_click', attributes)`；`selectPanel` 只负责选中，因此由各控件自行提供入口与位置。
 
 展开态导航的左右外距为 8px，悬停与选中底色在两侧各内缩 3px，前置单元宽 16px，与标签间隔 6px。新会话内容居中，左右外边距为 4px。它与导航的初始 12px 间距由滚动区外的 4px 和随内容滚走的 8px 组成。logo 行无底部外边距；内容从侧栏左边缘向内 16px 开始，标记与名称间隔 5px。仅 macOS 非全屏、侧栏展开时，顶部开关向右偏移 4px，并在整个淡出期间保持该偏移。折叠态尺寸独立保留。
 

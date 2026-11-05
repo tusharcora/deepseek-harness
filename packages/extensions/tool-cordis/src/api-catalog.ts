@@ -916,6 +916,92 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'crewConnections',
+    summary: 'Google sign-in, token refresh and connection status for the crew.',
+    description: 'Google sign-in, token refresh and connection status for the crew.',
+    methods: [
+      {
+        signature: 'async refreshIfDue(): Promise<void>',
+        description: 'Refresh the access token when it is within the margin of expiry. Concurrent calls share one refresh, and the record write is serialized by the store, so two processes never rotate one refresh token twice.',
+        parameters: [],
+        returns: 'after the check, and the refresh when one was due.',
+      },
+      {
+        signature: '@Remote(\'googleStatus\') async googleStatus(): Promise<GoogleStatus>',
+        description: 'Connection state for the Crew tab; carries no secret.',
+        parameters: [],
+        returns: 'Google status.',
+      },
+      {
+        signature: '@Remote(\'connectGoogle\') async connectGoogle(): Promise<GoogleSignInStart>',
+        description: 'Start Google sign-in and return the consent page URL for the browser to open. The attempt keeps running until the browser returns or the timeout passes; the tab reads the result from googleStatus.',
+        parameters: [],
+        returns: 'the URL, or why sign-in could not start.',
+      },
+      {
+        signature: '@Remote(\'memberDirectory\') async memberDirectory(member: string): Promise<MemberDirectory>',
+        description: 'The folder a member\'s chats run in when they belong to no workspace, created when missing.',
+        parameters: [{ name: 'member', description: 'crew member id such as `crew-mail`.' }],
+        returns: 'the absolute path, or why it could not be made.',
+      },
+      {
+        signature: '@Remote(\'disconnectGoogle\') async disconnectGoogle(): Promise<void>',
+        description: 'Remove the Google grant and the published access token.',
+        parameters: [],
+        returns: 'after both are gone.',
+      },
+    ],
+  },
+  {
+    key: 'crewImprove',
+    summary: 'Reflects on crew conversations and keeps each member\'s lessons.',
+    description: 'Reflects on crew conversations and keeps each member\'s lessons.',
+    methods: [
+      {
+        signature: 'lessons(member: string): readonly CrewLesson[]',
+        description: 'Approved lessons of one member.',
+        parameters: [{ name: 'member', description: 'crew member id.' }],
+        returns: 'lessons, oldest first.',
+      },
+      {
+        signature: 'section(member: string): string',
+        description: 'The system-prompt section for one member.',
+        parameters: [{ name: 'member', description: 'crew member id.' }],
+        returns: 'section text, empty when it has no lessons.',
+      },
+      {
+        signature: 'async reflect(session: Session, trigger: CrewReflectionTrigger): Promise<readonly CrewProposal[]>',
+        description: 'Reflect on one crew conversation now and store its proposals.',
+        parameters: [{ name: 'session', description: 'a crew member\'s Session.' }, { name: 'trigger', description: 'what asked for the reflection.' }],
+        returns: 'the new proposals.',
+      },
+      {
+        signature: '@Remote(\'learning\') async learning(): Promise<CrewImproveState>',
+        description: 'Lessons and proposals for the Crew tab.',
+        parameters: [],
+        returns: 'every member with learning, and the latest reflection outcome.',
+      },
+      {
+        signature: '@Remote(\'approve\') async approve(proposalId: string): Promise<CrewImproveResult>',
+        description: 'Approve a proposal: it becomes a lesson, replacing the lesson it names.',
+        parameters: [{ name: 'proposalId', description: 'proposal to approve.' }],
+        returns: 'whether it was approved.',
+      },
+      {
+        signature: '@Remote(\'reject\') async reject(proposalId: string): Promise<CrewImproveResult>',
+        description: 'Reject a proposal; the same lesson is not proposed again.',
+        parameters: [{ name: 'proposalId', description: 'proposal to reject.' }],
+        returns: 'whether it was rejected.',
+      },
+      {
+        signature: '@Remote(\'forget\') async forget(lessonId: string): Promise<CrewImproveResult>',
+        description: 'Remove an approved lesson; it is not proposed again.',
+        parameters: [{ name: 'lessonId', description: 'lesson to remove.' }],
+        returns: 'whether it was removed.',
+      },
+    ],
+  },
+  {
     key: 'cuaAccess',
     summary: 'Browser controls for provider-owned native permission and application decisions.',
     description: 'Browser controls for provider-owned native permission and application decisions.',
@@ -3611,6 +3697,26 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'stockCharts',
+    summary: 'Stock chart tool and quote Remote.',
+    description: 'Stock chart tool and quote Remote.',
+    methods: [
+      {
+        signature: 'async fetchSeries(symbol: string, range: StockRange, signal?: AbortSignal): Promise<StockSeries>',
+        description: 'Fetch one symbol\'s series from Yahoo.',
+        parameters: [{ name: 'symbol', description: 'raw ticker symbol.' }, { name: 'range', description: 'chart range.' }, { name: 'signal', description: 'caller cancellation.' }],
+        returns: 'the series.',
+        throws: ['{StockChartError} with the failure code.'],
+      },
+      {
+        signature: '@Remote(\'quote\') async quote(symbol: string, range: StockRange): Promise<StockQuoteResult>',
+        description: 'Fetch a series for an open card without involving the model.',
+        parameters: [{ name: 'symbol', description: 'ticker symbol.' }, { name: 'range', description: 'chart range.' }],
+        returns: 'the series, or the failure code and reason.',
+      },
+    ],
+  },
+  {
     key: 'storage',
     summary: 'The storage hub service.',
     description: 'The storage hub service. Backends register under `backend`; data forms mount under their `StorageForms` key and are reached as `ctx.storage.<form>`.',
@@ -6176,6 +6282,30 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type CredentialRef = Branded<\'CredentialRef\'>;',
   },
   {
+    name: 'CrewImproveResult',
+    declaration: 'export type CrewImproveResult = {\n    readonly ok: true;\n} | {\n    readonly ok: false;\n    readonly message: string;\n};',
+  },
+  {
+    name: 'CrewImproveState',
+    declaration: 'export interface CrewImproveState {\n    readonly members: readonly CrewLearning[];\n    readonly lastReflectedAt?: string;\n    readonly lastError?: string;\n}',
+  },
+  {
+    name: 'CrewLearning',
+    declaration: 'export interface CrewLearning {\n    readonly member: string;\n    readonly lessons: readonly CrewLesson[];\n    readonly proposals: readonly CrewProposal[];\n}',
+  },
+  {
+    name: 'CrewLesson',
+    declaration: 'export interface CrewLesson {\n    readonly id: string;\n    readonly member: string;\n    readonly text: string;\n    readonly evidence: string;\n    readonly sessionId: string;\n    readonly proposedAt: string;\n    readonly approvedAt: string;\n}',
+  },
+  {
+    name: 'CrewProposal',
+    declaration: 'export interface CrewProposal {\n    readonly id: string;\n    readonly member: string;\n    readonly text: string;\n    readonly evidence: string;\n    readonly sessionId: string;\n    readonly proposedAt: string;\n    readonly trigger: CrewReflectionTrigger;\n    readonly replaces?: string;\n}',
+  },
+  {
+    name: 'CrewReflectionTrigger',
+    declaration: 'export type CrewReflectionTrigger = \'feedback\' | \'turns\';',
+  },
+  {
     name: 'CronInput',
     declaration: 'export interface CronInput {\n    readonly expression: string;\n    readonly time_zone: string;\n}',
   },
@@ -6670,6 +6800,14 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'GoalView',
     declaration: 'export interface GoalView extends GoalSnapshot {\n    readonly roundsStarted: number;\n    readonly createdAt: number;\n    readonly updatedAt: number;\n    readonly activation: GoalActivation;\n}',
+  },
+  {
+    name: 'GoogleSignInStart',
+    declaration: 'export type GoogleSignInStart = {\n    readonly ok: true;\n    readonly url: string;\n} | {\n    readonly ok: false;\n    readonly reason: \'client-missing\' | \'in-progress\' | \'failed\';\n    readonly message: string;\n};',
+  },
+  {
+    name: 'GoogleStatus',
+    declaration: 'export interface GoogleStatus {\n    readonly clientConfigured: boolean;\n    readonly signedIn: boolean;\n    readonly expiresAt?: number;\n    readonly redirectUri: string;\n    readonly signingIn: boolean;\n    readonly lastError?: string;\n}',
   },
   {
     name: 'GrantRecord',
@@ -7222,6 +7360,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'McpServerRegistration',
     declaration: 'export type McpServerRegistration = Omit<EntryInput, \'enabled\'>;',
+  },
+  {
+    name: 'MemberDirectory',
+    declaration: 'export type MemberDirectory = {\n    readonly ok: true;\n    readonly path: string;\n} | {\n    readonly ok: false;\n    readonly message: string;\n};',
   },
   {
     name: 'Mergeability',
@@ -9194,6 +9336,30 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'StagedAttachment',
     declaration: 'export type StagedAttachment = {\n    readonly type: \'file\';\n    readonly attachment: FileAttachmentRef;\n} | {\n    readonly type: \'image\';\n    readonly attachment: ImageAttachmentRef;\n    readonly encodedBytes: number;\n};',
+  },
+  {
+    name: 'StockFailureCode',
+    declaration: 'export type StockFailureCode = \'invalid-symbol\' | \'not-found\' | \'unavailable\' | \'bad-response\';',
+  },
+  {
+    name: 'StockPoint',
+    declaration: 'export type StockPoint = {\n    readonly t: number;\n    readonly o: number;\n    readonly h: number;\n    readonly l: number;\n    readonly c: number;\n    readonly v?: number;\n};',
+  },
+  {
+    name: 'StockQuoteResult',
+    declaration: 'export type StockQuoteResult = {\n    readonly ok: true;\n    readonly series: StockSeries;\n} | {\n    readonly ok: false;\n    readonly code: StockFailureCode;\n    readonly message: string;\n};',
+  },
+  {
+    name: 'StockRange',
+    declaration: 'export type StockRange = (typeof STOCK_RANGES)[number];',
+  },
+  {
+    name: 'StockSeries',
+    declaration: 'export type StockSeries = {\n    readonly symbol: string;\n    readonly name?: string;\n    readonly currency: string;\n    readonly exchange: string;\n    readonly timeZone: string;\n    readonly range: StockRange;\n    readonly interval: string;\n    readonly price: number;\n    readonly reference: number;\n    readonly marketTime: number;\n    readonly points: StockPoint[];\n    readonly source: StockSource;\n    readonly fetchedAt: number;\n    readonly refreshSeconds: number;\n};',
+  },
+  {
+    name: 'StockSource',
+    declaration: 'export type StockSource = {\n    readonly name: string;\n    readonly url: string;\n};',
   },
   {
     name: 'StopShareRequest',

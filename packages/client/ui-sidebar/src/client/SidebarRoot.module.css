@@ -762,6 +762,14 @@
   color: var(--dsw-alias-label-primary);
 }
 
+/* Sections above the workspace seat; without padding it takes no space while no section renders. */
+.sectionsArea {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 /* The workspace seat stays mounted while its wide and rail bodies change. */
 .regionArea {
   grid-column: 2;

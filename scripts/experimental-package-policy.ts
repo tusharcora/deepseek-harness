@@ -25,6 +25,13 @@ export const EXPERIMENTAL_PACKAGE_NAME_EXCEPTIONS: Readonly<Record<string, strin
   'packages/experimental/plugin-recommendations': '@deepseek-ai/dsh-plugin-recommendations',
   'packages/experimental/client-ui-plugin-recommendations': '@deepseek-ai/dsh-client-ui-plugin-recommendations',
   'packages/experimental/personalized-recommendations': '@deepseek-ai/dsh-personalized-recommendations',
+  'packages/experimental/crew-faces': '@deepseek-ai/dsh-crew-faces',
+  'packages/experimental/crew-agents': '@deepseek-ai/dsh-crew-agents',
+  'packages/experimental/crew-agents-ui': '@deepseek-ai/dsh-crew-agents-ui',
+  'packages/experimental/crew-connections': '@deepseek-ai/dsh-crew-connections',
+  'packages/experimental/crew-improve': '@deepseek-ai/dsh-crew-improve',
+  'packages/experimental/crew-stock-chart': '@deepseek-ai/dsh-crew-stock-chart',
+  'packages/experimental/crew-stock-chart-ui': '@deepseek-ai/dsh-crew-stock-chart-ui',
 } satisfies Record<`packages/experimental/${string}`, `@deepseek-ai/dsh-${string}`>
 
 /** Legacy npm namespace, allowed only in `LEGACY_PREFIXED_EXPERIMENTAL_PACKAGE_DIRECTORIES`. */
