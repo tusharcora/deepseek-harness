@@ -43,6 +43,12 @@ kind: "package-group"
 | [`plugin-recommendations`](plugin-recommendations/README.zh.md) | 在对话中针对明确需求推荐官方插件 | `ctx.pluginRecommendations` |
 | [`client-ui-plugin-recommendations`](client-ui-plugin-recommendations/README.zh.md) | 官方插件卡片正文：目录文本与启用 | — |
 | [`personalized-recommendations`](personalized-recommendations/README.zh.md) | 默认禁用的个性化页面、插件推荐及其操作卡片组合 | — |
+| [`crew-faces`](crew-faces/README.zh.md) | 由智能体 ID 推导的 crew 智能体 SVG 头像 | — |
+| [`crew-agents`](crew-agents/README.zh.md) | Crew 预设：五位专家和一位向他们委派工作的幕僚长 | — |
+| [`crew-agents-ui`](crew-agents-ui/README.zh.md) | 带实时状态的 crew 成员浏览器名册 | `ctx.crew` |
+| [`crew-connections`](crew-connections/README.zh.md) | Crew 账户连接：Google 登录、令牌刷新与 crew 写入守卫 | `ctx.crewConnections` |
+| [`crew-stock-chart`](crew-stock-chart/README.zh.md) | 基于 Yahoo Finance 的股票图表工具及卡片刷新所用的报价 Remote | `ctx.stockCharts` |
+| [`crew-stock-chart-ui`](crew-stock-chart-ui/README.zh.md) | 回答下方的交互式股票图表卡片与工具行 | — |
 | [`tool-session-query`](tool-session-query/README.zh.md) | 按工作区授权的模型会话搜索、追踪与事件读取 | — |
 | [`session-search`](session-search/README.zh.md) | 可选实验性全局会话搜索工具 | — |
 | [`ralph-bundle`](ralph-bundle/README.zh.md) | 带隔离 workflow 引擎的可选重复委派 | — |

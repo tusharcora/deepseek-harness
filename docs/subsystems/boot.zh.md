@@ -143,6 +143,49 @@ async edit( entry: Entry, change: (current: Record<string, unknown>, inherited: 
 
 Source: [`packages/boot/config-editor/src/index.ts`](../../packages/boot/config-editor/src/index.ts)
 
+<a id="ctxcrewconnections--crewconnections"></a>
+
+### `ctx.crewConnections` — `CrewConnections`
+
+Google sign-in, token refresh and connection status for the crew.
+
+```ts cordis-catalog
+/**
+ * Refresh the access token when it is within the margin of expiry. Concurrent calls share one refresh, and the
+ * record write is serialized by the store, so two processes never rotate one refresh token twice.
+ * @returns after the check, and the refresh when one was due.
+ */
+async refreshIfDue(): Promise<void>
+
+/**
+ * Connection state for the Crew tab; carries no secret.
+ * @returns Google status.
+ */
+@Remote('googleStatus') async googleStatus(): Promise<GoogleStatus>
+
+/**
+ * Start Google sign-in and return the consent page URL for the browser to open. The attempt keeps running until
+ * the browser returns or the timeout passes; the tab reads the result from {@link googleStatus}.
+ * @returns the URL, or why sign-in could not start.
+ */
+@Remote('connectGoogle') async connectGoogle(): Promise<GoogleSignInStart>
+
+/**
+ * The folder a member's chats run in when they belong to no workspace, created when missing.
+ * @param member - crew member id such as `crew-mail`.
+ * @returns the absolute path, or why it could not be made.
+ */
+@Remote('memberDirectory') async memberDirectory(member: string): Promise<MemberDirectory>
+
+/**
+ * Remove the Google grant and the published access token.
+ * @returns after both are gone.
+ */
+@Remote('disconnectGoogle') async disconnectGoogle(): Promise<void>
+```
+
+Source: [`packages/experimental/crew-connections/src/index.ts`](../../packages/experimental/crew-connections/src/index.ts)
+
 <a id="ctxheadlessstartup--headlessstartupvalues"></a>
 
 ### `ctx.headlessStartup` — `HeadlessStartupValues`
@@ -448,6 +491,34 @@ Source: [`packages/client/ui-plugin-manager/src/index.ts`](../../packages/client
 Current profile facts; scheduling and mutation belong to their callers.
 
 Source: [`packages/boot/app-boot/src/profile-context.ts`](../../packages/boot/app-boot/src/profile-context.ts)
+
+<a id="ctxstockcharts--stockcharts"></a>
+
+### `ctx.stockCharts` — `StockCharts`
+
+Stock chart tool and quote Remote.
+
+```ts cordis-catalog
+/**
+ * Fetch one symbol's series from Yahoo.
+ * @param symbol - raw ticker symbol.
+ * @param range - chart range.
+ * @param signal - caller cancellation.
+ * @returns the series.
+ * @throws {StockChartError} with the failure code.
+ */
+async fetchSeries(symbol: string, range: StockRange, signal?: AbortSignal): Promise<StockSeries>
+
+/**
+ * Fetch a series for an open card without involving the model.
+ * @param symbol - ticker symbol.
+ * @param range - chart range.
+ * @returns the series, or the failure code and reason.
+ */
+@Remote('quote') async quote(symbol: string, range: StockRange): Promise<StockQuoteResult>
+```
+
+Source: [`packages/experimental/crew-stock-chart/src/index.ts`](../../packages/experimental/crew-stock-chart/src/index.ts)
 
 <a id="app-boot-events"></a>
 

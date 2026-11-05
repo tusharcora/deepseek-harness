@@ -24,6 +24,7 @@
 | `@deepseek-ai/dsh-mcp-resources` | `list_mcp_resource_templates`, `list_mcp_resources`, `read_mcp_resource` | `ctx.tools`, `ctx.mcpResources` | `tool/call`, `tool/result` | - | - |
 | `@deepseek-ai/dsh-experimental-browser-use-stagehand-native` | `stagehand_act`、`stagehand_extract`、`stagehand_navigate`、`stagehand_observe`、`stagehand_screenshot`、`stagehand_tabs` | `ctx.browserUse`、`ctx.agents`、`ctx.tools`、`ctx.systemPrompt` | `tool/call`、`tool/result` | - | - |
 | `@deepseek-ai/dsh-action-cards` | `propose_action` | `ctx.tools`、`ctx.agents`、`ctx.sessionProjections`、`ctx.remoteAccess` | `tool/call`、`tool/result`、`plugin:action-cards/decision`、`user/message` | - | 只向加载过已注册卡片种类 Skill 的 Agent 声明；各种类的包注册自己的动作，个性化推荐 Bundle 提供随产品发布的种类。 |
+| `@deepseek-ai/dsh-experimental-crew-stock-chart` | `ui_stock_chart` | `ctx.tools` | `tool/call`、`tool/result`（价格序列作为展示元数据） | - | 无需密钥即可从 Yahoo Finance 图表接口获取数据；浏览器卡片通过 stockCharts Remote 切换区间和刷新，不调用模型。 |
 | `@deepseek-ai/dsh-tool-ask-user` | `ask_user_question` | `ctx.tools`、`ctx.userQuestions` | `tool/call`、`tool/result after an answer or timeout`、`late user/message` | - | ask_user_question 默认保持原有阻塞行为；设置 `mode: timed` 后才启用前台超时与 pending 结果，同时问题仍可回答；timed 模式内 `timeout: -1` 让本次调用无限期阻塞。 |
 | `@deepseek-ai/dsh-tool-executor-ptc` | `run_code` | `ctx.workingDirectory (Agent executions)`、`ctx.tools`、`ctx.ptcRuntime`、`ctx.systemPrompt` | `tool/call`、`one tool/ptc-dispatch-start + tool/ptc-dispatch pair per bridged sub-call`、`tool/result` | - | PTC 执行器只向模型公开 run_code，并在运行时语言生成的 SDK 中声明其他可见能力。程序绑定按提交顺序进入共享的受守卫工具流水线；并行安全的函数体最多重叠 maxParallelSubCalls 个，嵌套结果保持与外层程序关联。 |
 | `@deepseek-ai/dsh-plan-mode` | `exit_plan_mode` | `ctx.tools`、`ctx.systemPrompt`、`ctx.agents`、`ctx.userQuestions (execution time, opportunistic)` | `tool/call`、`plan/mode inactive on an approved review`、`tool/result` | - | 规划未激活时，exit_plan_mode 仍保留在面向模型的 schema 中，这样状态转换不会在规划策略变更之外额外造成工具目录变动。其执行路径会拒绝规划模式之外的调用；在规划模式下，它通过用户交互 seam 提交计划（批准／根据反馈继续规划），批准后会在步骤边界记录规划模式已停用。 |
@@ -544,6 +545,44 @@
 来源：[`packages/experimental/action-cards/src/index.ts`](../packages/experimental/action-cards/src/index.ts)
 
 只向加载过已注册卡片种类 Skill 的 Agent 声明；各种类的包注册自己的动作，个性化推荐 Bundle 提供随产品发布的种类。
+
+<a id="deepseek-aidsh-experimental-crew-stock-chart"></a>
+
+## `@deepseek-ai/dsh-experimental-crew-stock-chart`
+
+### `ui_stock_chart`
+
+为用户显示某个股票代码的交互式价格图表（Yahoo Finance 代码，如 AAPL、^GSPC、BRK-B 或 EURUSD=X），并获取其最新价格和涨跌，附带来源和获取时间。当用户询问价格、图表或某个代码的走势时使用。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "symbol": {
+      "type": "string",
+      "description": "Ticker symbol, for example AAPL."
+    },
+    "range": {
+      "type": "string",
+      "description": "Chart range; defaults to 1d.",
+      "enum": [
+        "1d",
+        "5d",
+        "1mo",
+        "6mo",
+        "1y"
+      ]
+    }
+  },
+  "required": [
+    "symbol"
+  ]
+}
+```
+
+来源：[`packages/experimental/crew-stock-chart/src/index.ts`](../packages/experimental/crew-stock-chart/src/index.ts)
+
+无需密钥即可从 Yahoo Finance 图表接口获取数据；浏览器卡片通过 stockCharts Remote 切换区间和刷新，不调用模型。
 
 <a id="deepseek-aidsh-tool-ask-user"></a>
 

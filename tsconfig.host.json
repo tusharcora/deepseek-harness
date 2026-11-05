@@ -278,6 +278,9 @@
     { "path": "./packages/experimental/creation-recommendations" },
     { "path": "./packages/experimental/plugin-recommendations" },
     { "path": "./packages/experimental/personalized-recommendations" },
+    { "path": "./packages/experimental/crew-agents" },
+    { "path": "./packages/experimental/crew-stock-chart" },
+    { "path": "./packages/experimental/crew-connections" },
 
     { "path": "./packages/experimental/client-ui-cot-translation/tsconfig.host.json" },
     { "path": "./packages/experimental/cot-translation-bundle" },

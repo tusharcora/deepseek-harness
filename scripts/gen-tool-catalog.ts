@@ -45,6 +45,7 @@ import type { SubagentProvider } from '@deepseek-ai/dsh-subagent'
 import * as ToolSubagentControl from '@deepseek-ai/dsh-tool-subagent-control'
 import SkillRegistry from '@deepseek-ai/dsh-skill'
 import ActionCards from '@deepseek-ai/dsh-action-cards'
+import StockCharts from '@deepseek-ai/dsh-experimental-crew-stock-chart'
 import RemoteAccess from '@deepseek-ai/dsh-api-remote-access'
 import * as SkillFileSystem from '@deepseek-ai/dsh-skill-filesystem'
 import LocalJobRegistry from '@deepseek-ai/dsh-jobs-local'
@@ -268,6 +269,17 @@ const TOOL_PACKAGES: ToolPackage[] = [
       await ctx.plugin(ActionCards)
     },
     note: 'Declared only to an Agent that loaded the skill of a registered card kind; the kind packages register their actions, and the Personalized recommendations bundle supplies the shipped kinds.',
+  },
+  {
+    pkg: '@deepseek-ai/dsh-experimental-crew-stock-chart',
+    dir: 'crew-stock-chart',
+    source: 'packages/experimental/crew-stock-chart/src/index.ts',
+    requires: ['ctx.tools'],
+    writes: ['tool/call', 'tool/result with the price series as presentation metadata'],
+    async mount(ctx) {
+      await ctx.plugin(StockCharts)
+    },
+    note: 'Fetches from the Yahoo Finance chart endpoint without a key; the browser card switches ranges and refreshes through the stockCharts Remote without a model call.',
   },
   {
     pkg: '@deepseek-ai/dsh-tool-ask-user',
