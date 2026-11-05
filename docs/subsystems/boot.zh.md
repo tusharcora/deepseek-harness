@@ -186,6 +186,22 @@ async refreshIfDue(): Promise<void>
 
 Source: [`packages/experimental/crew-connections/src/index.ts`](../../packages/experimental/crew-connections/src/index.ts)
 
+<a id="ctxcrewdesktop--crewdesktop"></a>
+
+### `ctx.crewDesktop` — `CrewDesktop`
+
+Reports the computer-use provider and host to the Desktop tab.
+
+```ts cordis-catalog
+/**
+ * Where computer use runs.
+ * @returns the provider name, when one is registered, and the host machine.
+ */
+@Remote('where') async where(): Promise<DesktopLocation>
+```
+
+Source: [`packages/experimental/crew-desktop/src/index.ts`](../../packages/experimental/crew-desktop/src/index.ts)
+
 <a id="ctxcrewimprove--crewimprove"></a>
 
 ### `ctx.crewImprove` — `CrewImprove`

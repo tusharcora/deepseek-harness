@@ -60,6 +60,7 @@
     { "path": "./packages/experimental/crew-faces" },
     { "path": "./packages/experimental/crew-agents-ui" },
     { "path": "./packages/experimental/crew-stock-chart-ui" },
+    { "path": "./packages/experimental/crew-desktop-ui" },
     { "path": "./packages/experimental/client-ui-creation-recommendations" },
     { "path": "./packages/experimental/client-ui-plugin-recommendations" },
     { "path": "./packages/client/ui-file-drag" },

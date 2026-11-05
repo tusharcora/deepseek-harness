@@ -953,6 +953,19 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'crewDesktop',
+    summary: 'Reports the computer-use provider and host to the Desktop tab.',
+    description: 'Reports the computer-use provider and host to the Desktop tab.',
+    methods: [
+      {
+        signature: '@Remote(\'where\') async where(): Promise<DesktopLocation>',
+        description: 'Where computer use runs.',
+        parameters: [],
+        returns: 'the provider name, when one is registered, and the host machine.',
+      },
+    ],
+  },
+  {
     key: 'crewImprove',
     summary: 'Reflects on crew conversations and keeps each member\'s lessons.',
     description: 'Reflects on crew conversations and keeps each member\'s lessons.',
@@ -6364,6 +6377,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'DeliveryRetentionBounds',
     declaration: 'export interface DeliveryRetentionBounds {\n    readonly days: number;\n    readonly records: number;\n}',
+  },
+  {
+    name: 'DesktopLocation',
+    declaration: 'export interface DesktopLocation {\n    readonly provider?: string;\n    readonly host: string;\n    readonly platform: string;\n}',
   },
   {
     name: 'DeveloperMessage',
