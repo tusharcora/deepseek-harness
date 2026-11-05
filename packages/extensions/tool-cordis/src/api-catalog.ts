@@ -6414,7 +6414,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'CrewMember',
-    declaration: 'export interface CrewMember {\n    readonly id: string;\n    readonly name: string;\n    readonly description: string;\n    readonly persona: string;\n    readonly face: MemberFace;\n    readonly abilities: MemberAbilities;\n    readonly connections: readonly string[];\n    readonly lead?: boolean;\n    readonly builtIn?: boolean;\n    readonly createdBy?: string;\n    readonly order: number;\n}',
+    declaration: 'export interface CrewMember {\n    readonly id: string;\n    readonly name: string;\n    readonly description: string;\n    readonly persona: string;\n    readonly face: MemberFace;\n    readonly abilities: MemberAbilities;\n    readonly connections: readonly string[];\n    readonly maxToolCalls?: number;\n    readonly lead?: boolean;\n    readonly builtIn?: boolean;\n    readonly createdBy?: string;\n    readonly order: number;\n}',
   },
   {
     name: 'CrewProposal',

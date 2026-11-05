@@ -637,6 +637,10 @@ Add a crew member when recurring work fits no teammate. It joins the crew at onc
     "first_task": {
       "type": "string",
       "description": "A self-contained task to start the new member on now."
+    },
+    "max_tool_calls": {
+      "type": "number",
+      "description": "Most tool calls it may make per message; omit or 0 for no limit."
     }
   },
   "required": [
