@@ -54,6 +54,7 @@ kind: "package-group"
 | [`crew-chain-of-thought`](crew-chain-of-thought/README.zh.md) | 思考链卡片：实时显示每个回合的步骤、用时和来源 | — |
 | [`crew-kanban`](crew-kanban/README.zh.md) | 以团队负责人身份在看板列之间移动团队任务 | `ctx.crewKanban` |
 | [`crew-kanban-ui`](crew-kanban-ui/README.zh.md) | Session 团队任务的看板标签页 | `ctx.crewBoards` |
+| [`crew-handoff-ui`](crew-handoff-ui/README.zh.md) | 交接标签页：智能体卡片及交给各自的任务 | `ctx.crewHandoffs` |
 | [`crew-improve`](crew-improve/README.zh.md) | Crew 学习：从评分和纠正中提出经验，在 Crew 标签页中批准 | `ctx.crewImprove` |
 | [`crew-stock-chart`](crew-stock-chart/README.zh.md) | 基于 Yahoo Finance 的股票图表工具及卡片刷新所用的报价 Remote | `ctx.stockCharts` |
 | [`crew-stock-chart-ui`](crew-stock-chart-ui/README.zh.md) | 回答下方的交互式股票图表卡片与工具行 | — |

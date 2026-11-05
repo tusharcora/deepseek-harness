@@ -93,6 +93,8 @@
       "@deepseek-ai/dsh-crew-kanban/types": ["./packages/experimental/crew-kanban/src/types.ts"],
       "@deepseek-ai/dsh-crew-kanban-ui": ["./packages/experimental/crew-kanban-ui/src/index.ts"],
       "@deepseek-ai/dsh-crew-kanban-ui/client": ["./packages/experimental/crew-kanban-ui/src/client/index.ts"],
+      "@deepseek-ai/dsh-crew-handoff-ui": ["./packages/experimental/crew-handoff-ui/src/index.ts"],
+      "@deepseek-ai/dsh-crew-handoff-ui/client": ["./packages/experimental/crew-handoff-ui/src/client/index.ts"],
       "@deepseek-ai/dsh-creation-recommendations": ["./packages/experimental/creation-recommendations/src/index.ts"],
       "@deepseek-ai/dsh-creation-recommendations/types": ["./packages/experimental/creation-recommendations/src/types.ts"],
       "@deepseek-ai/dsh-client-ui-creation-recommendations": ["./packages/experimental/client-ui-creation-recommendations/src/index.ts"],

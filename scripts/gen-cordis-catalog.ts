@@ -207,6 +207,7 @@ export const SERVICE_WALK_EXEMPTIONS: Record<string, string> = {
   crewFaces: 'client-side crew face component — packages/experimental/crew-faces/README.md owns the API',
   stockChartCards: 'client-side stock card component — packages/experimental/crew-stock-chart-ui/README.md owns the API',
   crewBoards: 'client-side Team task board component — packages/experimental/crew-kanban-ui/README.md owns the API',
+  crewHandoffs: 'client-side agent handoff view — packages/experimental/crew-handoff-ui/README.md owns the API',
   settingsSchema: 'client-side schema introspection service — packages/client/ui-settings/README.md owns the API',
   configForms: 'client-side shared entry forms — packages/client/ui-settings/README.md owns the API',
   chatFileMentions: 'client-side slot-contract accessor (ChatFileMentions) — packages/client/ui-chat/README.md owns the API',
