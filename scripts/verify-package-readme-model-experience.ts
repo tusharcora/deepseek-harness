@@ -62,6 +62,8 @@ const SENTENCE_MODEL_EXPERIENCE: Readonly<Record<string, SentenceContract>> = {
   'packages/experimental/crew-faces': { kind: 'none', reason: 'Draws agent faces in the browser without adding model input or Session events.' },
   'packages/experimental/crew-agents-ui': { kind: 'none', reason: 'Folds browser Session status into a crew roster without adding model input or Session events.' },
   'packages/experimental/crew-stock-chart-ui': { kind: 'none', reason: 'Draws recorded stock series and refreshes them through a Remote without adding model input or Session events.' },
+  'packages/experimental/crew-desktop': { kind: 'none', reason: 'Reports the computer-use provider and Host to the browser through a Remote without adding model input or Session events.' },
+  'packages/experimental/crew-desktop-ui': { kind: 'none', reason: 'Shows the latest tool-result screenshot and stops turns through the Session controller without adding model input or Session events.' },
   'packages/experimental/liveshare': { kind: 'indirect', reason: 'The host drives viewer prompts into the shared Session, so model requests follow the viewer input the host forwards.' },
   'packages/experimental/plugin-market-bundle': { kind: 'indirect', reason: 'Mounts the pluginMarket service, which lets the Creator preset register the plugin_market tool documented in packages/boot/plugin-market.' },
   'packages/experimental/client-ui-action-cards': { kind: 'indirect', reason: 'Card actions go to the Host card service, which owns the logged tool, decisions and status notice.' },
