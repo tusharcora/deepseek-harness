@@ -197,7 +197,7 @@ Reports the computer-use provider and host to the Desktop tab.
  * Where computer use runs.
  * @returns the provider name, when one is registered, and the host machine.
  */
-@Remote('where') async where(): Promise<DesktopLocation>
+@Remote('where') where(): Promise<DesktopLocation>
 ```
 
 Source: [`packages/experimental/crew-desktop/src/index.ts`](../../packages/experimental/crew-desktop/src/index.ts)
@@ -262,6 +262,28 @@ async reflect(session: Session, trigger: CrewReflectionTrigger): Promise<readonl
 Types: [Session](session.md)
 
 Source: [`packages/experimental/crew-improve/src/index.ts`](../../packages/experimental/crew-improve/src/index.ts)
+
+<a id="ctxcrewtoday--crewtoday"></a>
+
+### `ctx.crewToday` — `CrewToday`
+
+Reads the Today page's account data.
+
+```ts cordis-catalog
+/**
+ * This week's events on the primary Google calendar.
+ * @returns events with source and fetch time, or why there are none.
+ */
+@Remote('calendar') async calendar(): Promise<TodayResult<TodayEvent>>
+
+/**
+ * Open GitHub pull requests involving the user.
+ * @returns pull requests with source and fetch time, or why there are none.
+ */
+@Remote('pullRequests') async pullRequests(): Promise<TodayResult<TodayPullRequest>>
+```
+
+Source: [`packages/experimental/crew-today/src/index.ts`](../../packages/experimental/crew-today/src/index.ts)
 
 <a id="ctxheadlessstartup--headlessstartupvalues"></a>
 
