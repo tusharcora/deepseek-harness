@@ -292,7 +292,7 @@ const TOOL_PACKAGES: ToolPackage[] = [
     async mount(ctx) {
       await ctx.plugin(SubagentRuntime)
       ctx.provide('sessionController', {} as never)
-      await ctx.plugin(CrewWorkflows, { homeDirectory: join(tmpdir(), 'dsh-tool-catalog-crew-workflows') })
+      await ctx.plugin(CrewWorkflows, { homeDirectory: join(tmpdir(), 'dsh-tool-catalog-crew-workflows'), provider: 'spawn', keepRuns: 30 })
     },
     note: 'Saves a draft only; the user reviews, saves and runs it from the Workflows page, and no step runs from the tool call.',
   },
