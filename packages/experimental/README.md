@@ -55,6 +55,7 @@ Promotion requires a named product role, documented public behavior and limitati
 | [`crew-kanban`](crew-kanban/README.md) | Moves Team tasks between board columns as the Team Lead | `ctx.crewKanban` |
 | [`crew-kanban-ui`](crew-kanban-ui/README.md) | Board tab for a Session's Team tasks | `ctx.crewBoards` |
 | [`crew-handoff-ui`](crew-handoff-ui/README.md) | Handoffs tab: agent cards and the tasks handed to each | `ctx.crewHandoffs` |
+| [`crew-tool-map-ui`](crew-tool-map-ui/README.md) | Tools tab: each agent's tool access and every call | `ctx.crewToolMaps` |
 | [`crew-improve`](crew-improve/README.md) | Crew learning: lessons proposed from ratings and corrections, approved in the Crew tab | `ctx.crewImprove` |
 | [`crew-stock-chart`](crew-stock-chart/README.md) | Stock chart tool over Yahoo Finance and the quote Remote the card refreshes through | `ctx.stockCharts` |
 | [`crew-stock-chart-ui`](crew-stock-chart-ui/README.md) | Interactive stock chart card beneath answers and the tool row | — |

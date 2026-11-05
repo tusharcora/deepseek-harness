@@ -55,6 +55,7 @@ kind: "package-group"
 | [`crew-kanban`](crew-kanban/README.zh.md) | 以团队负责人身份在看板列之间移动团队任务 | `ctx.crewKanban` |
 | [`crew-kanban-ui`](crew-kanban-ui/README.zh.md) | Session 团队任务的看板标签页 | `ctx.crewBoards` |
 | [`crew-handoff-ui`](crew-handoff-ui/README.zh.md) | 交接标签页：智能体卡片及交给各自的任务 | `ctx.crewHandoffs` |
+| [`crew-tool-map-ui`](crew-tool-map-ui/README.zh.md) | 工具标签页：每个智能体的工具权限和每次调用 | `ctx.crewToolMaps` |
 | [`crew-improve`](crew-improve/README.zh.md) | Crew 学习：从评分和纠正中提出经验，在 Crew 标签页中批准 | `ctx.crewImprove` |
 | [`crew-stock-chart`](crew-stock-chart/README.zh.md) | 基于 Yahoo Finance 的股票图表工具及卡片刷新所用的报价 Remote | `ctx.stockCharts` |
 | [`crew-stock-chart-ui`](crew-stock-chart-ui/README.zh.md) | 回答下方的交互式股票图表卡片与工具行 | — |
