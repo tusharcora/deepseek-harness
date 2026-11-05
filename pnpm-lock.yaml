@@ -9664,9 +9664,6 @@ importers:
       '@deepseek-ai/dsh-agent-instructions':
         specifier: workspace:*
         version: link:../../context/agent-instructions
-      '@deepseek-ai/dsh-agent-preset':
-        specifier: workspace:*
-        version: link:../../preset/agent-preset
       '@deepseek-ai/dsh-crew-agents-ui':
         specifier: workspace:*
         version: link:../crew-agents-ui
@@ -9691,6 +9688,9 @@ importers:
       '@deepseek-ai/dsh-crew-kanban-ui':
         specifier: workspace:*
         version: link:../crew-kanban-ui
+      '@deepseek-ai/dsh-crew-roster':
+        specifier: workspace:*
+        version: link:../crew-roster
       '@deepseek-ai/dsh-crew-tool-map-ui':
         specifier: workspace:*
         version: link:../crew-tool-map-ui
@@ -9812,6 +9812,9 @@ importers:
       '@deepseek-ai/dsh-crew-improve':
         specifier: workspace:*
         version: link:../crew-improve
+      '@deepseek-ai/dsh-crew-roster':
+        specifier: workspace:*
+        version: link:../crew-roster
       '@deepseek-ai/dsh-session':
         specifier: workspace:*
         version: link:../../core/session
@@ -10106,6 +10109,25 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
+
+  packages/experimental/crew-roster:
+    dependencies:
+      '@deepseek-ai/dsh-atomic-write':
+        specifier: workspace:*
+        version: link:../../util/atomic-write
+      '@deepseek-ai/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-agent-preset-registry':
+        specifier: workspace:*
+        version: link:../../preset/agent-preset-registry
+      '@deepseek-ai/dsh-typert-protocol':
+        specifier: workspace:*
+        version: link:../../typert/protocol
 
   packages/experimental/crew-stock-chart:
     dependencies:

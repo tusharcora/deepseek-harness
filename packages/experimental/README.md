@@ -59,6 +59,7 @@ Promotion requires a named product role, documented public behavior and limitati
 | [`crew-workflows`](crew-workflows/README.md) | Saved agentic and fixed workflows, their runner and a draft tool | `ctx.crewWorkflows` |
 | [`crew-workflows-ui`](crew-workflows-ui/README.md) | Workflows page below Automations | - |
 | [`crew-improve`](crew-improve/README.md) | Crew learning: lessons proposed from ratings and corrections, approved in the Crew tab | `ctx.crewImprove` |
+| [`crew-roster`](crew-roster/README.md) | Crew members stored on disk and registered as agent presets | `ctx.crewRoster` |
 | [`crew-stock-chart`](crew-stock-chart/README.md) | Stock chart tool over Yahoo Finance and the quote Remote the card refreshes through | `ctx.stockCharts` |
 | [`crew-stock-chart-ui`](crew-stock-chart-ui/README.md) | Interactive stock chart card beneath answers and the tool row | — |
 | [`tool-session-query`](tool-session-query/README.md) | Workspace-authorized model session search, trace, and event reads | — |

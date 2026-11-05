@@ -1028,6 +1028,31 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'crewRoster',
+    summary: 'Stores the crew and keeps one registered preset per member.',
+    description: 'Stores the crew and keeps one registered preset per member.',
+    methods: [
+      {
+        signature: '@Remote(\'state\') state(): Promise<RosterState>',
+        description: 'The crew and the services members can connect to.',
+        parameters: [],
+        returns: 'the roster state.',
+      },
+      {
+        signature: '@Remote(\'saveMember\') async saveMember(member: CrewMember): Promise<RosterResult<CrewMember>>',
+        description: 'Add a member (an empty id) or update one. The id, lead mark, shipped mark and order stay as stored.',
+        parameters: [{ name: 'member', description: 'the edited member.' }],
+        returns: 'the saved member, or why it cannot be saved.',
+      },
+      {
+        signature: '@Remote(\'deleteMember\') async deleteMember(id: string): Promise<RosterResult>',
+        description: 'Remove a member. Its past chats stay; they cannot start new turns once dsh restarts.',
+        parameters: [{ name: 'id', description: 'member id.' }],
+        returns: 'success, or why it cannot be removed.',
+      },
+    ],
+  },
+  {
     key: 'crewToday',
     summary: 'Reads the Today page\'s account data.',
     description: 'Reads the Today page\'s account data.',
@@ -6152,6 +6177,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type ConnectionAdmission = {\n    readonly peer: PeerScope;\n    readonly release: () => Promise<void>;\n} | {\n    readonly rejection: 401 | 403 | 409;\n};',
   },
   {
+    name: 'ConnectionChoice',
+    declaration: 'export interface ConnectionChoice {\n    readonly id: string;\n    readonly label: string;\n    readonly available: boolean;\n}',
+  },
+  {
     name: 'ConnectionFetchHandler',
     declaration: 'export interface ConnectionFetchHandler {\n    requestBodyMode(request: {\n        readonly method: string;\n        readonly url: URL;\n    }): ConnectionRequestBodyMode;\n    fetch(request: Request, peer: PeerScope): Promise<Response>;\n}',
   },
@@ -6384,6 +6413,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface CrewLesson {\n    readonly id: string;\n    readonly member: string;\n    readonly text: string;\n    readonly evidence: string;\n    readonly sessionId: string;\n    readonly proposedAt: string;\n    readonly approvedAt: string;\n}',
   },
   {
+    name: 'CrewMember',
+    declaration: 'export interface CrewMember {\n    readonly id: string;\n    readonly name: string;\n    readonly description: string;\n    readonly persona: string;\n    readonly face: MemberFace;\n    readonly abilities: MemberAbilities;\n    readonly connections: readonly string[];\n    readonly lead?: boolean;\n    readonly builtIn?: boolean;\n    readonly order: number;\n}',
+  },
+  {
     name: 'CrewProposal',
     declaration: 'export interface CrewProposal {\n    readonly id: string;\n    readonly member: string;\n    readonly text: string;\n    readonly evidence: string;\n    readonly sessionId: string;\n    readonly proposedAt: string;\n    readonly trigger: CrewReflectionTrigger;\n    readonly replaces?: string;\n}',
   },
@@ -6602,6 +6635,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'FiberState',
     declaration: 'export const enum FiberState {\n    PENDING,\n    LOADING,\n    ACTIVE,\n    FAILED,\n    DISPOSED,\n    UNLOADING\n}',
+  },
+  {
+    name: 'FileAccess',
+    declaration: 'export type FileAccess = \'none\' | \'read\' | \'write\';',
   },
   {
     name: 'FileAttachmentRef',
@@ -7460,8 +7497,20 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type McpServerRegistration = Omit<EntryInput, \'enabled\'>;',
   },
   {
+    name: 'MemberAbilities',
+    declaration: 'export interface MemberAbilities {\n    readonly files: FileAccess;\n    readonly shell: boolean;\n    readonly web: boolean;\n    readonly schedule: boolean;\n}',
+  },
+  {
+    name: 'MemberBody',
+    declaration: 'export type MemberBody = \'orb\' | \'block\' | \'drop\' | \'bean\';',
+  },
+  {
     name: 'MemberDirectory',
     declaration: 'export type MemberDirectory = {\n    readonly ok: true;\n    readonly path: string;\n} | {\n    readonly ok: false;\n    readonly message: string;\n};',
+  },
+  {
+    name: 'MemberFace',
+    declaration: 'export interface MemberFace {\n    readonly body: MemberBody;\n    readonly color: string;\n}',
   },
   {
     name: 'Mergeability',
@@ -8306,6 +8355,14 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'ReviewDecision',
     declaration: 'export type ReviewDecision = \'approved\' | \'changes-requested\' | \'review-required\' | \'none\';',
+  },
+  {
+    name: 'RosterResult',
+    declaration: 'export type RosterResult<T = true> = {\n    readonly ok: true;\n    readonly value: T;\n} | {\n    readonly ok: false;\n    readonly message: string;\n};',
+  },
+  {
+    name: 'RosterState',
+    declaration: 'export interface RosterState {\n    readonly members: readonly CrewMember[];\n    readonly connections: readonly ConnectionChoice[];\n}',
   },
   {
     name: 'RpcId',

@@ -587,7 +587,7 @@ Fetches from the Yahoo Finance chart endpoint without a key; the browser card sw
 
 ### `crew_workflow_draft`
 
-Propose a crew workflow the user can review, edit, save and run from the Workflows page. Nothing runs until the user clicks Run. Use it when the user asks you to set up a repeatable workflow. An agentic workflow hands work between crew members (presets crew-chief, crew-mail, crew-chat, crew-code, crew-research, crew-life); a fixed workflow runs tool calls only.
+Propose a crew workflow the user can review, edit, save and run from the Workflows page. Nothing runs until the user clicks Run. Use it when the user asks you to set up a repeatable workflow. An agentic workflow hands work between crew members, each named by its preset id such as crew-research; a fixed workflow runs tool calls only.
 
 ```json
 {

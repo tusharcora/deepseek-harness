@@ -591,7 +591,7 @@
 
 ### `crew_workflow_draft`
 
-提议一个 crew 工作流，用户可以在工作流页面审阅、编辑、保存并运行。在用户点击“运行”之前不会运行任何内容。当用户要求设置可重复的工作流时使用。智能体工作流在 crew 成员之间传递工作（preset 为 crew-chief、crew-mail、crew-chat、crew-code、crew-research、crew-life）；固定工作流只运行工具调用。
+提议一个 crew 工作流，用户可以在工作流页面审阅、编辑、保存并运行。在用户点击“运行”之前不会运行任何内容。当用户要求设置可重复的工作流时使用。智能体工作流在 crew 成员之间传递工作，每位成员以其 preset ID 指定，例如 crew-research；固定工作流只运行工具调用。
 
 ```json
 {
