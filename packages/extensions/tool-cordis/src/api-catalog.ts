@@ -958,7 +958,7 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     description: 'Reports the computer-use provider and host to the Desktop tab.',
     methods: [
       {
-        signature: '@Remote(\'where\') async where(): Promise<DesktopLocation>',
+        signature: '@Remote(\'where\') where(): Promise<DesktopLocation>',
         description: 'Where computer use runs.',
         parameters: [],
         returns: 'the provider name, when one is registered, and the host machine.',
@@ -1011,6 +1011,25 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         description: 'Remove an approved lesson; it is not proposed again.',
         parameters: [{ name: 'lessonId', description: 'lesson to remove.' }],
         returns: 'whether it was removed.',
+      },
+    ],
+  },
+  {
+    key: 'crewToday',
+    summary: 'Reads the Today page\'s account data.',
+    description: 'Reads the Today page\'s account data.',
+    methods: [
+      {
+        signature: '@Remote(\'calendar\') async calendar(): Promise<TodayResult<TodayEvent>>',
+        description: 'This week\'s events on the primary Google calendar.',
+        parameters: [],
+        returns: 'events with source and fetch time, or why there are none.',
+      },
+      {
+        signature: '@Remote(\'pullRequests\') async pullRequests(): Promise<TodayResult<TodayPullRequest>>',
+        description: 'Open GitHub pull requests involving the user.',
+        parameters: [],
+        returns: 'pull requests with source and fetch time, or why there are none.',
       },
     ],
   },
@@ -9741,6 +9760,22 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'ToastOptions',
     declaration: 'export interface ToastOptions {\n    timeoutMs?: number;\n}',
+  },
+  {
+    name: 'TodayEvent',
+    declaration: 'export interface TodayEvent {\n    readonly id: string;\n    readonly title: string;\n    readonly start: string;\n    readonly end: string;\n    readonly allDay: boolean;\n    readonly url?: string;\n}',
+  },
+  {
+    name: 'TodayPullRequest',
+    declaration: 'export interface TodayPullRequest {\n    readonly title: string;\n    readonly url: string;\n    readonly repository: string;\n    readonly number: number;\n    readonly draft: boolean;\n    readonly updatedAt: string;\n}',
+  },
+  {
+    name: 'TodayResult',
+    declaration: 'export type TodayResult<T> = {\n    readonly ok: true;\n    readonly items: readonly T[];\n    readonly source: TodaySource;\n} | {\n    readonly ok: false;\n    readonly reason: \'not-connected\' | \'failed\';\n    readonly message: string;\n};',
+  },
+  {
+    name: 'TodaySource',
+    declaration: 'export interface TodaySource {\n    readonly name: string;\n    readonly url: string;\n    readonly fetchedAt: number;\n}',
   },
   {
     name: 'TokenMeasurement',
