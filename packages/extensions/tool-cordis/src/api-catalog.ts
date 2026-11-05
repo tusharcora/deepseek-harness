@@ -953,6 +953,55 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'crewImprove',
+    summary: 'Reflects on crew conversations and keeps each member\'s lessons.',
+    description: 'Reflects on crew conversations and keeps each member\'s lessons.',
+    methods: [
+      {
+        signature: 'lessons(member: string): readonly CrewLesson[]',
+        description: 'Approved lessons of one member.',
+        parameters: [{ name: 'member', description: 'crew member id.' }],
+        returns: 'lessons, oldest first.',
+      },
+      {
+        signature: 'section(member: string): string',
+        description: 'The system-prompt section for one member.',
+        parameters: [{ name: 'member', description: 'crew member id.' }],
+        returns: 'section text, empty when it has no lessons.',
+      },
+      {
+        signature: 'async reflect(session: Session, trigger: CrewReflectionTrigger): Promise<readonly CrewProposal[]>',
+        description: 'Reflect on one crew conversation now and store its proposals.',
+        parameters: [{ name: 'session', description: 'a crew member\'s Session.' }, { name: 'trigger', description: 'what asked for the reflection.' }],
+        returns: 'the new proposals.',
+      },
+      {
+        signature: '@Remote(\'learning\') async learning(): Promise<CrewImproveState>',
+        description: 'Lessons and proposals for the Crew tab.',
+        parameters: [],
+        returns: 'every member with learning, and the latest reflection outcome.',
+      },
+      {
+        signature: '@Remote(\'approve\') async approve(proposalId: string): Promise<CrewImproveResult>',
+        description: 'Approve a proposal: it becomes a lesson, replacing the lesson it names.',
+        parameters: [{ name: 'proposalId', description: 'proposal to approve.' }],
+        returns: 'whether it was approved.',
+      },
+      {
+        signature: '@Remote(\'reject\') async reject(proposalId: string): Promise<CrewImproveResult>',
+        description: 'Reject a proposal; the same lesson is not proposed again.',
+        parameters: [{ name: 'proposalId', description: 'proposal to reject.' }],
+        returns: 'whether it was rejected.',
+      },
+      {
+        signature: '@Remote(\'forget\') async forget(lessonId: string): Promise<CrewImproveResult>',
+        description: 'Remove an approved lesson; it is not proposed again.',
+        parameters: [{ name: 'lessonId', description: 'lesson to remove.' }],
+        returns: 'whether it was removed.',
+      },
+    ],
+  },
+  {
     key: 'cuaAccess',
     summary: 'Browser controls for provider-owned native permission and application decisions.',
     description: 'Browser controls for provider-owned native permission and application decisions.',
@@ -6210,6 +6259,30 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'CredentialRef',
     declaration: 'export type CredentialRef = Branded<\'CredentialRef\'>;',
+  },
+  {
+    name: 'CrewImproveResult',
+    declaration: 'export type CrewImproveResult = {\n    readonly ok: true;\n} | {\n    readonly ok: false;\n    readonly message: string;\n};',
+  },
+  {
+    name: 'CrewImproveState',
+    declaration: 'export interface CrewImproveState {\n    readonly members: readonly CrewLearning[];\n    readonly lastReflectedAt?: string;\n    readonly lastError?: string;\n}',
+  },
+  {
+    name: 'CrewLearning',
+    declaration: 'export interface CrewLearning {\n    readonly member: string;\n    readonly lessons: readonly CrewLesson[];\n    readonly proposals: readonly CrewProposal[];\n}',
+  },
+  {
+    name: 'CrewLesson',
+    declaration: 'export interface CrewLesson {\n    readonly id: string;\n    readonly member: string;\n    readonly text: string;\n    readonly evidence: string;\n    readonly sessionId: string;\n    readonly proposedAt: string;\n    readonly approvedAt: string;\n}',
+  },
+  {
+    name: 'CrewProposal',
+    declaration: 'export interface CrewProposal {\n    readonly id: string;\n    readonly member: string;\n    readonly text: string;\n    readonly evidence: string;\n    readonly sessionId: string;\n    readonly proposedAt: string;\n    readonly trigger: CrewReflectionTrigger;\n    readonly replaces?: string;\n}',
+  },
+  {
+    name: 'CrewReflectionTrigger',
+    declaration: 'export type CrewReflectionTrigger = \'feedback\' | \'turns\';',
   },
   {
     name: 'CronInput',

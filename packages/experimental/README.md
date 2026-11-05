@@ -47,6 +47,7 @@ Promotion requires a named product role, documented public behavior and limitati
 | [`crew-agents`](crew-agents/README.md) | Crew presets: five specialists and a Chief of staff that delegates to them | — |
 | [`crew-agents-ui`](crew-agents-ui/README.md) | Browser roster of crew members with live status | `ctx.crew` |
 | [`crew-connections`](crew-connections/README.md) | Crew account connections: Google sign-in, token refresh and the crew write guard | `ctx.crewConnections` |
+| [`crew-improve`](crew-improve/README.md) | Crew learning: lessons proposed from ratings and corrections, approved in the Crew tab | `ctx.crewImprove` |
 | [`crew-stock-chart`](crew-stock-chart/README.md) | Stock chart tool over Yahoo Finance and the quote Remote the card refreshes through | `ctx.stockCharts` |
 | [`crew-stock-chart-ui`](crew-stock-chart-ui/README.md) | Interactive stock chart card beneath answers and the tool row | — |
 | [`tool-session-query`](tool-session-query/README.md) | Workspace-authorized model session search, trace, and event reads | — |

@@ -47,6 +47,7 @@ kind: "package-group"
 | [`crew-agents`](crew-agents/README.zh.md) | Crew 预设：五位专家和一位向他们委派工作的幕僚长 | — |
 | [`crew-agents-ui`](crew-agents-ui/README.zh.md) | 带实时状态的 crew 成员浏览器名册 | `ctx.crew` |
 | [`crew-connections`](crew-connections/README.zh.md) | Crew 账户连接：Google 登录、令牌刷新与 crew 写入守卫 | `ctx.crewConnections` |
+| [`crew-improve`](crew-improve/README.zh.md) | Crew 学习：从评分和纠正中提出经验，在 Crew 标签页中批准 | `ctx.crewImprove` |
 | [`crew-stock-chart`](crew-stock-chart/README.zh.md) | 基于 Yahoo Finance 的股票图表工具及卡片刷新所用的报价 Remote | `ctx.stockCharts` |
 | [`crew-stock-chart-ui`](crew-stock-chart-ui/README.zh.md) | 回答下方的交互式股票图表卡片与工具行 | — |
 | [`tool-session-query`](tool-session-query/README.zh.md) | 按工作区授权的模型会话搜索、追踪与事件读取 | — |

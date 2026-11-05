@@ -186,6 +186,67 @@ async refreshIfDue(): Promise<void>
 
 Source: [`packages/experimental/crew-connections/src/index.ts`](../../packages/experimental/crew-connections/src/index.ts)
 
+<a id="ctxcrewimprove--crewimprove"></a>
+
+### `ctx.crewImprove` — `CrewImprove`
+
+Reflects on crew conversations and keeps each member's lessons.
+
+```ts cordis-catalog
+/**
+ * Approved lessons of one member.
+ * @param member - crew member id.
+ * @returns lessons, oldest first.
+ */
+lessons(member: string): readonly CrewLesson[]
+
+/**
+ * The system-prompt section for one member.
+ * @param member - crew member id.
+ * @returns section text, empty when it has no lessons.
+ */
+section(member: string): string
+
+/**
+ * Reflect on one crew conversation now and store its proposals.
+ * @param session - a crew member's Session.
+ * @param trigger - what asked for the reflection.
+ * @returns the new proposals.
+ */
+async reflect(session: Session, trigger: CrewReflectionTrigger): Promise<readonly CrewProposal[]>
+
+/**
+ * Lessons and proposals for the Crew tab.
+ * @returns every member with learning, and the latest reflection outcome.
+ */
+@Remote('learning') async learning(): Promise<CrewImproveState>
+
+/**
+ * Approve a proposal: it becomes a lesson, replacing the lesson it names.
+ * @param proposalId - proposal to approve.
+ * @returns whether it was approved.
+ */
+@Remote('approve') async approve(proposalId: string): Promise<CrewImproveResult>
+
+/**
+ * Reject a proposal; the same lesson is not proposed again.
+ * @param proposalId - proposal to reject.
+ * @returns whether it was rejected.
+ */
+@Remote('reject') async reject(proposalId: string): Promise<CrewImproveResult>
+
+/**
+ * Remove an approved lesson; it is not proposed again.
+ * @param lessonId - lesson to remove.
+ * @returns whether it was removed.
+ */
+@Remote('forget') async forget(lessonId: string): Promise<CrewImproveResult>
+```
+
+Types: [Session](session.md)
+
+Source: [`packages/experimental/crew-improve/src/index.ts`](../../packages/experimental/crew-improve/src/index.ts)
+
 <a id="ctxheadlessstartup--headlessstartupvalues"></a>
 
 ### `ctx.headlessStartup` — `HeadlessStartupValues`

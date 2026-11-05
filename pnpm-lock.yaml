@@ -9661,6 +9661,9 @@ importers:
       '@deepseek-ai/dsh-experimental-crew-faces':
         specifier: workspace:*
         version: link:../crew-faces
+      '@deepseek-ai/dsh-experimental-crew-improve':
+        specifier: workspace:*
+        version: link:../crew-improve
       '@deepseek-ai/dsh-mcp-client':
         specifier: workspace:*
         version: link:../../mcp/mcp-client
@@ -9770,6 +9773,9 @@ importers:
       '@deepseek-ai/dsh-experimental-crew-faces':
         specifier: workspace:*
         version: link:../crew-faces
+      '@deepseek-ai/dsh-experimental-crew-improve':
+        specifier: workspace:*
+        version: link:../crew-improve
       '@deepseek-ai/dsh-session':
         specifier: workspace:*
         version: link:../../core/session
@@ -9819,6 +9825,40 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
+
+  packages/experimental/crew-improve:
+    dependencies:
+      '@deepseek-ai/dsh-atomic-write':
+        specifier: workspace:*
+        version: link:../../util/atomic-write
+      '@deepseek-ai/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-agent-preset-registry':
+        specifier: workspace:*
+        version: link:../../preset/agent-preset-registry
+      '@deepseek-ai/dsh-llm':
+        specifier: workspace:*
+        version: link:../../llm/llm
+      '@deepseek-ai/dsh-message-feedback':
+        specifier: workspace:*
+        version: link:../../feedback/message-feedback
+      '@deepseek-ai/dsh-session':
+        specifier: workspace:*
+        version: link:../../core/session
+      '@deepseek-ai/dsh-system-prompt':
+        specifier: workspace:*
+        version: link:../../core/system-prompt
+      '@deepseek-ai/dsh-timeout':
+        specifier: workspace:*
+        version: link:../../util/timeout
+      '@deepseek-ai/dsh-typert-protocol':
+        specifier: workspace:*
+        version: link:../../typert/protocol
 
   packages/experimental/crew-stock-chart:
     dependencies:
