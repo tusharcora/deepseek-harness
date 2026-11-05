@@ -47,6 +47,7 @@ import * as ToolSubagentControl from '@deepseek-ai/dsh-tool-subagent-control'
 import SkillRegistry from '@deepseek-ai/dsh-skill'
 import ActionCards from '@deepseek-ai/dsh-action-cards'
 import StockCharts from '@deepseek-ai/dsh-crew-stock-chart'
+import CrewRoster from '@deepseek-ai/dsh-crew-roster'
 import CrewWorkflows from '@deepseek-ai/dsh-crew-workflows'
 import RemoteAccess from '@deepseek-ai/dsh-api-remote-access'
 import * as SkillFileSystem from '@deepseek-ai/dsh-skill-filesystem'
@@ -282,6 +283,19 @@ const TOOL_PACKAGES: ToolPackage[] = [
       await ctx.plugin(StockCharts)
     },
     note: 'Fetches from the Yahoo Finance chart endpoint without a key; the browser card switches ranges and refreshes through the stockCharts Remote without a model call.',
+  },
+  {
+    pkg: '@deepseek-ai/dsh-crew-roster',
+    dir: 'crew-roster',
+    source: 'packages/experimental/crew-roster/src/index.ts',
+    requires: ['ctx.tools', 'ctx.agentPresets', 'ctx.subagents (first task only)', 'a calling Agent'],
+    writes: ['tool/call', 'tool/result', 'a member in the crew roster file', 'child session events for a first task'],
+    async mount(ctx) {
+      // Schema harvest registers no real preset.
+      ctx.provide('agentPresets', { register: () => Promise.resolve(() => Promise.resolve()), presetForSession: () => null } as never)
+      await ctx.plugin(CrewRoster, { homeDirectory: join(tmpdir(), 'dsh-tool-catalog-crew-roster') })
+    },
+    note: 'A new member gets only abilities and approved connections some member already has; the user edits or removes it in the Crew tab.',
   },
   {
     pkg: '@deepseek-ai/dsh-crew-workflows',

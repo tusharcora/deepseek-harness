@@ -25,6 +25,7 @@
 | `@deepseek-ai/dsh-experimental-browser-use-stagehand-native` | `stagehand_act`、`stagehand_extract`、`stagehand_navigate`、`stagehand_observe`、`stagehand_screenshot`、`stagehand_tabs` | `ctx.browserUse`、`ctx.agents`、`ctx.tools`、`ctx.systemPrompt` | `tool/call`、`tool/result` | - | - |
 | `@deepseek-ai/dsh-action-cards` | `propose_action` | `ctx.tools`、`ctx.agents`、`ctx.sessionProjections`、`ctx.remoteAccess` | `tool/call`、`tool/result`、`plugin:action-cards/decision`、`user/message` | - | 只向加载过已注册卡片种类 Skill 的 Agent 声明；各种类的包注册自己的动作，个性化推荐 Bundle 提供随产品发布的种类。 |
 | `@deepseek-ai/dsh-crew-stock-chart` | `ui_stock_chart` | `ctx.tools` | `tool/call`、`tool/result`（价格序列作为展示元数据） | - | 无需密钥即可从 Yahoo Finance 图表接口获取数据；浏览器卡片通过 stockCharts Remote 切换区间和刷新，不调用模型。 |
+| `@deepseek-ai/dsh-crew-roster` | `crew_member_create` | `ctx.tools`、`ctx.agentPresets`、`ctx.subagents（仅首个任务）`、`a calling Agent` | `tool/call`、`tool/result`、crew 名册文件中的成员、首个任务的子会话事件 | - | 新成员只获得已有成员具备的能力和已批准的连接；用户可在 Crew 标签页中编辑或移除它。 |
 | `@deepseek-ai/dsh-crew-workflows` | `crew_workflow_draft` | `ctx.tools`、`ctx.subagents`、`ctx.sessionController（仅运行时）` | `tool/call`、`tool/result`、crew 工作流文件中的草稿 | - | 只保存草稿；用户在工作流页面审阅、保存并运行，工具调用本身不会运行任何步骤。 |
 | `@deepseek-ai/dsh-tool-ask-user` | `ask_user_question` | `ctx.tools`、`ctx.userQuestions` | `tool/call`、`tool/result after an answer or timeout`、`late user/message` | - | ask_user_question 默认保持原有阻塞行为；设置 `mode: timed` 后才启用前台超时与 pending 结果，同时问题仍可回答；timed 模式内 `timeout: -1` 让本次调用无限期阻塞。 |
 | `@deepseek-ai/dsh-tool-executor-ptc` | `run_code` | `ctx.workingDirectory (Agent executions)`、`ctx.tools`、`ctx.ptcRuntime`、`ctx.systemPrompt` | `tool/call`、`one tool/ptc-dispatch-start + tool/ptc-dispatch pair per bridged sub-call`、`tool/result` | - | PTC 执行器只向模型公开 run_code，并在运行时语言生成的 SDK 中声明其他可见能力。程序绑定按提交顺序进入共享的受守卫工具流水线；并行安全的函数体最多重叠 maxParallelSubCalls 个，嵌套结果保持与外层程序关联。最终超时时间与 maxSubCallsPerMinute 决定调用总额度；超限会终止程序。 |
@@ -585,13 +586,86 @@
 
 无需密钥即可从 Yahoo Finance 图表接口获取数据；浏览器卡片通过 stockCharts Remote 切换区间和刷新，不调用模型。
 
+<a id="deepseek-aidsh-crew-roster"></a>
+
+## `@deepseek-ai/dsh-crew-roster`
+
+### `crew_member_create`
+
+当经常性的工作没有合适的队友时，添加一位 crew 成员。它会立即加入 crew，出现在用户的 Crew 标签页中，用户可在那里编辑或移除它；从用户的下一个对话起可通过 ask_crew 向它提问。它的能力和连接仅限于已有成员具备的那些。传入 first_task 可立即让它开始一项任务并取得回答。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Short name, such as Designer."
+    },
+    "description": {
+      "type": "string",
+      "description": "One line on what it does; teammates read it when choosing whom to ask."
+    },
+    "instructions": {
+      "type": "string",
+      "description": "How it works and what it must never do; opens its system prompt."
+    },
+    "files": {
+      "type": "string",
+      "description": "File access; defaults to none.",
+      "enum": [
+        "none",
+        "read",
+        "write"
+      ]
+    },
+    "shell": {
+      "type": "boolean",
+      "description": "Run commands."
+    },
+    "web": {
+      "type": "boolean",
+      "description": "Fetch web pages; defaults to true."
+    },
+    "schedule": {
+      "type": "boolean",
+      "description": "Create scheduled tasks."
+    },
+    "connections": {
+      "type": "array",
+      "description": "Services: gmail, gcal, github, cloudflare-docs, firecrawl, slack, exa, obsidian.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "first_task": {
+      "type": "string",
+      "description": "A self-contained task to start the new member on now."
+    },
+    "max_tool_calls": {
+      "type": "number",
+      "description": "Most tool calls it may make per message; omit or 0 for no limit."
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "instructions"
+  ]
+}
+```
+
+来源：[`packages/experimental/crew-roster/src/index.ts`](../packages/experimental/crew-roster/src/index.ts)
+
+新成员只获得已有成员具备的能力和已批准的连接；用户可在 Crew 标签页中编辑或移除它。
+
 <a id="deepseek-aidsh-crew-workflows"></a>
 
 ## `@deepseek-ai/dsh-crew-workflows`
 
 ### `crew_workflow_draft`
 
-提议一个 crew 工作流，用户可以在工作流页面审阅、编辑、保存并运行。在用户点击“运行”之前不会运行任何内容。当用户要求设置可重复的工作流时使用。智能体工作流在 crew 成员之间传递工作（preset 为 crew-chief、crew-mail、crew-chat、crew-code、crew-research、crew-life）；固定工作流只运行工具调用。
+提议一个 crew 工作流，用户可以在工作流页面审阅、编辑、保存并运行。在用户点击“运行”之前不会运行任何内容。当用户要求设置可重复的工作流时使用。智能体工作流在 crew 成员之间传递工作，每位成员以其 preset ID 指定，例如 crew-research；固定工作流只运行工具调用。
 
 ```json
 {

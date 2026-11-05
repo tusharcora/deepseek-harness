@@ -286,6 +286,36 @@ Types: [Agent](core.md)
 
 Source: [`packages/experimental/crew-kanban/src/index.ts`](../../packages/experimental/crew-kanban/src/index.ts)
 
+<a id="ctxcrewroster--crewrosterservice"></a>
+
+### `ctx.crewRoster` — `CrewRosterService`
+
+Stores the crew and keeps one registered preset per member.
+
+```ts cordis-catalog
+/**
+ * The crew and the services members can connect to.
+ * @returns the roster state.
+ */
+@Remote('state') state(): Promise<RosterState>
+
+/**
+ * Add a member (an empty id) or update one. The id, lead mark, shipped mark and order stay as stored.
+ * @param member - the edited member.
+ * @returns the saved member, or why it cannot be saved.
+ */
+@Remote('saveMember') saveMember(member: CrewMember): Promise<RosterResult<CrewMember>>
+
+/**
+ * Remove a member. Its past chats stay; they cannot start new turns once dsh restarts.
+ * @param id - member id.
+ * @returns success, or why it cannot be removed.
+ */
+@Remote('deleteMember') async deleteMember(id: string): Promise<RosterResult>
+```
+
+Source: [`packages/experimental/crew-roster/src/index.ts`](../../packages/experimental/crew-roster/src/index.ts)
+
 <a id="ctxcrewtoday--crewtoday"></a>
 
 ### `ctx.crewToday` — `CrewToday`

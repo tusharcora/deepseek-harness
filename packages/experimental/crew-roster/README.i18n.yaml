@@ -1,0 +1,79 @@
+# Bilingual-pair consistency record for README.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write packages/experimental/crew-roster/README.md
+/:
+  en: edc06f1ff5f428fd
+  zh: aa374182018aa077
+/deepseek-ai-dsh-crew-roster:
+  en: 4b04ddf6fd19267d
+  zh: 74886c73136e4d07
+/deepseek-ai-dsh-crew-roster/summary:
+  en: 7a0f32411ccc5486
+  zh: 65141f33d61246fc
+/deepseek-ai-dsh-crew-roster/table-of-contents:
+  en: d152484eb41ac6b4
+  zh: b00dddf4c88f0a45
+/deepseek-ai-dsh-crew-roster/use-this-package:
+  en: 625ed231a6e3a527
+  zh: 3d130d1b98533c4b
+/deepseek-ai-dsh-crew-roster/understand-the-implementation:
+  en: a4ca1d883c77ff2e
+  zh: cd1612b1c46ff651
+/deepseek-ai-dsh-crew-roster/further-exploration:
+  en: 83003183c0a15bb6
+  zh: cb9c64a3934abdc9
+/deepseek-ai-dsh-crew-roster/model-experience:
+  en: 215e7ba838619b7b
+  zh: a311da3843709f90
+/deepseek-ai-dsh-crew-roster/model-experience/member-presets:
+  en: 10be634efb3f5781
+  zh: a982e51c03696b9e
+/deepseek-ai-dsh-crew-roster/model-experience/member-presets/what-the-model-sees:
+  en: 297938b6f62cf995
+  zh: 95937408cd5347d1
+/deepseek-ai-dsh-crew-roster/model-experience/member-presets/what-the-model-sees/teammate-lines:
+  en: 819351e16a465d00
+  zh: 7eb2bd5b9d397bca
+/deepseek-ai-dsh-crew-roster/model-experience/member-presets/token-effect:
+  en: 4d4737d857470c84
+  zh: b1d883c2653c811f
+/deepseek-ai-dsh-crew-roster/model-experience/member-presets/kv-cache-effect:
+  en: 86ea9bfad02b9f30
+  zh: e18833295bb206fc
+/deepseek-ai-dsh-crew-roster/model-experience/tool-call-budget:
+  en: e4c7ddfb5bda196b
+  zh: 79a37fdf0841c7c4
+/deepseek-ai-dsh-crew-roster/model-experience/tool-call-budget/what-the-model-sees:
+  en: a8d4b71f412f3a57
+  zh: 65d427057e96c58b
+/deepseek-ai-dsh-crew-roster/model-experience/tool-call-budget/what-the-model-sees/refusal:
+  en: a6335078ec9f9b74
+  zh: 7f0fe6efb141cc82
+/deepseek-ai-dsh-crew-roster/model-experience/tool-call-budget/token-effect:
+  en: a0ebaf39fdcd85e9
+  zh: 29ae0a9805317538
+/deepseek-ai-dsh-crew-roster/model-experience/tool-call-budget/kv-cache-effect:
+  en: b78db241c78b337d
+  zh: b94043e131a568f4
+/deepseek-ai-dsh-crew-roster/model-experience/create-tool:
+  en: 576d6ac77c41c250
+  zh: b56d35fc675fc430
+/deepseek-ai-dsh-crew-roster/model-experience/create-tool/what-the-model-sees:
+  en: 07b536f27c3875e7
+  zh: a4ddb4b8e0ecfbd9
+/deepseek-ai-dsh-crew-roster/model-experience/create-tool/what-the-model-sees/result:
+  en: 9a433f6f25d808c1
+  zh: 288899307fe32e5b
+/deepseek-ai-dsh-crew-roster/model-experience/create-tool/token-effect:
+  en: 0a0a56dbe7382afd
+  zh: f0cddeadab1b9e3d
+/deepseek-ai-dsh-crew-roster/model-experience/create-tool/kv-cache-effect:
+  en: 1ed83d8926b0eaba
+  zh: bf401dc7a8279a19
+/deepseek-ai-dsh-crew-roster/known-limitations-and-deferred-work:
+  en: 5bf2b8419ebbdbae
+  zh: faa02c645f670908
+/deepseek-ai-dsh-crew-roster/known-limitations-and-deferred-work/dev-note:
+  en: 191eb5d3656138be
+  zh: 8a879e4a68623e54

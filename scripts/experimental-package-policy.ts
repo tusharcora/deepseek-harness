@@ -41,6 +41,7 @@ export const EXPERIMENTAL_PACKAGE_NAME_EXCEPTIONS: Readonly<Record<string, strin
   'packages/experimental/crew-kanban-ui': '@deepseek-ai/dsh-crew-kanban-ui',
   'packages/experimental/crew-handoff-ui': '@deepseek-ai/dsh-crew-handoff-ui',
   'packages/experimental/crew-tool-map-ui': '@deepseek-ai/dsh-crew-tool-map-ui',
+  'packages/experimental/crew-roster': '@deepseek-ai/dsh-crew-roster',
   'packages/experimental/crew-workflows': '@deepseek-ai/dsh-crew-workflows',
   'packages/experimental/crew-workflows-ui': '@deepseek-ai/dsh-crew-workflows-ui',
 } satisfies Record<`packages/experimental/${string}`, `@deepseek-ai/dsh-${string}`>

@@ -37,7 +37,6 @@
   "license": "MIT",
   "dependencies": {
     "@deepseek-ai/dsh-agent-instructions": "workspace:*",
-    "@deepseek-ai/dsh-agent-preset": "workspace:*",
     "@deepseek-ai/dsh-crew-agents-ui": "workspace:*",
     "@deepseek-ai/dsh-crew-chain-of-thought": "workspace:*",
     "@deepseek-ai/dsh-crew-connections": "workspace:*",
@@ -46,6 +45,7 @@
     "@deepseek-ai/dsh-crew-improve": "workspace:*",
     "@deepseek-ai/dsh-crew-kanban": "workspace:*",
     "@deepseek-ai/dsh-crew-kanban-ui": "workspace:*",
+    "@deepseek-ai/dsh-crew-roster": "workspace:*",
     "@deepseek-ai/dsh-crew-tool-map-ui": "workspace:*",
     "@deepseek-ai/dsh-crew-workflows": "workspace:*",
     "@deepseek-ai/dsh-crew-workflows-ui": "workspace:*",
@@ -62,6 +62,7 @@
     "@deepseek-ai/dsh-tool-schedule": "workspace:*",
     "@deepseek-ai/dsh-tool-subagent": "workspace:*",
     "@deepseek-ai/dsh-tool-subagent-control": "workspace:*",
+    "@deepseek-ai/dsh-tool-skill": "workspace:*",
     "@deepseek-ai/dsh-tool-todo": "workspace:*",
     "@deepseek-ai/dsh-tool-web": "workspace:*"
   },
