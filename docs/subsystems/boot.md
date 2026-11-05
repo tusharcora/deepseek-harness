@@ -304,7 +304,7 @@ Stores the crew and keeps one registered preset per member.
  * @param member - the edited member.
  * @returns the saved member, or why it cannot be saved.
  */
-@Remote('saveMember') async saveMember(member: CrewMember): Promise<RosterResult<CrewMember>>
+@Remote('saveMember') saveMember(member: CrewMember): Promise<RosterResult<CrewMember>>
 
 /**
  * Remove a member. Its past chats stay; they cannot start new turns once dsh restarts.

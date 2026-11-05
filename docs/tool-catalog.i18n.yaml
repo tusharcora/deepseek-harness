@@ -9,8 +9,8 @@
   en: 6cc2cd9ced70bb09
   zh: 1c0e6cb4ba2ed637
 /tool-schema-catalog/tool-package-map:
-  en: 8ab4f72105c5de67
-  zh: 019fa4c649b2461c
+  en: 868cafb802627f7a
+  zh: b243449599f13a87
 /tool-schema-catalog/deepseek-ai-dsh-plugin-manager:
   en: e0143916bb634762
   zh: e0143916bb634762
@@ -66,8 +66,14 @@
   en: e87bee4c6477bfbf
   zh: e87bee4c6477bfbf
 /tool-schema-catalog/deepseek-ai-dsh-crew-stock-chart/ui-stock-chart:
-  en: 0e3a3772e6ce8b3f
-  zh: f527f448f53a354f
+  en: 154a2738625131bf
+  zh: c1d9698ed1914229
+/tool-schema-catalog/deepseek-ai-dsh-crew-roster:
+  en: 37b1964641cbfc95
+  zh: 37b1964641cbfc95
+/tool-schema-catalog/deepseek-ai-dsh-crew-roster/crew-member-create:
+  en: b865ab004e0b9cf0
+  zh: f51575d6d1578d3b
 /tool-schema-catalog/deepseek-ai-dsh-crew-workflows:
   en: 74b962f5529beb7e
   zh: 74b962f5529beb7e

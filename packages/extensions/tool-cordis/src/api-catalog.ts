@@ -1039,7 +1039,7 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         returns: 'the roster state.',
       },
       {
-        signature: '@Remote(\'saveMember\') async saveMember(member: CrewMember): Promise<RosterResult<CrewMember>>',
+        signature: '@Remote(\'saveMember\') saveMember(member: CrewMember): Promise<RosterResult<CrewMember>>',
         description: 'Add a member (an empty id) or update one. The id, lead mark, shipped mark and order stay as stored.',
         parameters: [{ name: 'member', description: 'the edited member.' }],
         returns: 'the saved member, or why it cannot be saved.',
@@ -6414,7 +6414,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'CrewMember',
-    declaration: 'export interface CrewMember {\n    readonly id: string;\n    readonly name: string;\n    readonly description: string;\n    readonly persona: string;\n    readonly face: MemberFace;\n    readonly abilities: MemberAbilities;\n    readonly connections: readonly string[];\n    readonly lead?: boolean;\n    readonly builtIn?: boolean;\n    readonly order: number;\n}',
+    declaration: 'export interface CrewMember {\n    readonly id: string;\n    readonly name: string;\n    readonly description: string;\n    readonly persona: string;\n    readonly face: MemberFace;\n    readonly abilities: MemberAbilities;\n    readonly connections: readonly string[];\n    readonly lead?: boolean;\n    readonly builtIn?: boolean;\n    readonly createdBy?: string;\n    readonly order: number;\n}',
   },
   {
     name: 'CrewProposal',

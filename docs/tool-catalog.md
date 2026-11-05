@@ -21,6 +21,7 @@ This table connects model-visible tool names to the plugin package and service s
 | `@deepseek-ai/dsh-experimental-browser-use-stagehand-native` | `stagehand_act`, `stagehand_extract`, `stagehand_navigate`, `stagehand_observe`, `stagehand_screenshot`, `stagehand_tabs` | `ctx.browserUse`, `ctx.agents`, `ctx.tools`, `ctx.systemPrompt` | `tool/call`, `tool/result` | - | - |
 | `@deepseek-ai/dsh-action-cards` | `propose_action` | `ctx.tools`, `ctx.agents`, `ctx.sessionProjections`, `ctx.remoteAccess` | `tool/call`, `tool/result`, `plugin:action-cards/decision`, `user/message` | - | Declared only to an Agent that loaded the skill of a registered card kind; the kind packages register their actions, and the Personalized recommendations bundle supplies the shipped kinds. |
 | `@deepseek-ai/dsh-crew-stock-chart` | `ui_stock_chart` | `ctx.tools` | `tool/call`, `tool/result with the price series as presentation metadata` | - | Fetches from the Yahoo Finance chart endpoint without a key; the browser card switches ranges and refreshes through the stockCharts Remote without a model call. |
+| `@deepseek-ai/dsh-crew-roster` | `crew_member_create` | `ctx.tools`, `ctx.agentPresets`, `ctx.subagents (first task only)`, `a calling Agent` | `tool/call`, `tool/result`, `a member in the crew roster file`, `child session events for a first task` | - | A new member gets only abilities and approved connections some member already has; the user edits or removes it in the Crew tab. |
 | `@deepseek-ai/dsh-crew-workflows` | `crew_workflow_draft` | `ctx.tools`, `ctx.subagents`, `ctx.sessionController (runs only)` | `tool/call`, `tool/result`, `a draft in the crew workflows file` | - | Saves a draft only; the user reviews, saves and runs it from the Workflows page, and no step runs from the tool call. |
 | `@deepseek-ai/dsh-tool-ask-user` | `ask_user_question` | `ctx.tools`, `ctx.userQuestions` | `tool/call`, `tool/result after an answer or timeout`, `late user/message` | - | ask_user_question keeps the original blocking behavior by default; set `mode: timed` to opt into a foreground timeout and pending result while the question remains answerable. In timed mode, `timeout: -1` keeps that call blocking indefinitely. |
 | `@deepseek-ai/dsh-tool-executor-ptc` | `run_code` | `ctx.workingDirectory (Agent executions)`, `ctx.tools`, `ctx.ptcRuntime`, `ctx.systemPrompt` | `tool/call`, `one tool/ptc-dispatch-start + tool/ptc-dispatch pair per bridged sub-call`, `tool/result` | - | The PTC executor exposes only run_code to the model and declares other visible capabilities in a generated SDK in the runtime’s language. Program bindings enter the shared guarded tool pipeline in submission order; concurrency-safe bodies overlap up to maxParallelSubCalls, and nested results remain linked to the outer program. The resolved timeout and maxSubCallsPerMinute set the total call allowance; exceeding it terminates the program. |
@@ -580,6 +581,75 @@ Show the user an interactive price chart for a ticker (Yahoo Finance symbols suc
 Source: [`packages/experimental/crew-stock-chart/src/index.ts`](../packages/experimental/crew-stock-chart/src/index.ts)
 
 Fetches from the Yahoo Finance chart endpoint without a key; the browser card switches ranges and refreshes through the stockCharts Remote without a model call.
+
+<a id="deepseek-aidsh-crew-roster"></a>
+
+## `@deepseek-ai/dsh-crew-roster`
+
+### `crew_member_create`
+
+Add a crew member when recurring work fits no teammate. It joins the crew at once, appears in the user's Crew tab, where the user can edit or remove it, and can be asked with ask_crew from the user's next chats. Its abilities and connections are limited to ones some member already has. Pass first_task to start it on a task now and get its answer.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Short name, such as Designer."
+    },
+    "description": {
+      "type": "string",
+      "description": "One line on what it does; teammates read it when choosing whom to ask."
+    },
+    "instructions": {
+      "type": "string",
+      "description": "How it works and what it must never do; opens its system prompt."
+    },
+    "files": {
+      "type": "string",
+      "description": "File access; defaults to none.",
+      "enum": [
+        "none",
+        "read",
+        "write"
+      ]
+    },
+    "shell": {
+      "type": "boolean",
+      "description": "Run commands."
+    },
+    "web": {
+      "type": "boolean",
+      "description": "Fetch web pages; defaults to true."
+    },
+    "schedule": {
+      "type": "boolean",
+      "description": "Create scheduled tasks."
+    },
+    "connections": {
+      "type": "array",
+      "description": "Services: gmail, gcal, github, cloudflare-docs, firecrawl, slack, exa, obsidian.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "first_task": {
+      "type": "string",
+      "description": "A self-contained task to start the new member on now."
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "instructions"
+  ]
+}
+```
+
+Source: [`packages/experimental/crew-roster/src/index.ts`](../packages/experimental/crew-roster/src/index.ts)
+
+A new member gets only abilities and approved connections some member already has; the user edits or removes it in the Crew tab.
 
 <a id="deepseek-aidsh-crew-workflows"></a>
 
