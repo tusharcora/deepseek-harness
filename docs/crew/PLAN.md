@@ -4,7 +4,7 @@ Status: draft, waiting for approval. Nothing is built yet.
 
 ## Shared conventions
 
-- Every plugin is a package at `packages/experimental/crew-<name>`, named `@deepseek-ai/dsh-experimental-crew-<name>` (the experimental naming policy requires the prefix), version-aligned with its neighbours. Each has a `README.md` in the repo's section layout, `locale/en.json`, `src/`, `tests/`, and `"license": "MIT"`. A plugin with config rows ships `cordis.patch.yml` with `icon.svg` and declares `dsh.bundle`, as `personalized-recommendations` does, so `plugin_manager` installs it on its own.
+- Every plugin is a package at `packages/experimental/crew-<name>`, named `@deepseek-ai/dsh-crew-<name>` and listed in `EXPERIMENTAL_PACKAGE_NAME_EXCEPTIONS`, version-aligned with its neighbours. Each has a `README.md` in the repo's section layout, `locale/en.json`, `src/`, `tests/`, and `"license": "MIT"`. A plugin with config rows ships `cordis.patch.yml` with `icon.svg` and declares `dsh.bundle`, as `personalized-recommendations` does, so `plugin_manager` installs it on its own.
 - Client UI copy comes from typed `locales.ts` dictionaries and goes through `ctx.locale` and `t`. CSS modules use only `--dsw-alias-*` and the radius tokens. Primary buttons use `Button` from `dsh-client-ui-primitives`, which follows brand-primary. DeepSeek blue appears only as an accent.
 - Tests: `*.spec.ts` on the Host and `*.client.spec.tsx` in the browser, in the style of each pattern package.
 - After each plugin: run its tests, `pnpm run build:artifacts`, install with `plugin_manager`, check it at http://127.0.0.1:3080, then report what works and what doesn't.
