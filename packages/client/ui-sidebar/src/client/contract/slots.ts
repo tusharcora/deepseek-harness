@@ -55,6 +55,13 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      * which is a size container one viewport tall and a scroll-state container,
      * and binds its own vertical scroller through `useSectionScroller`.
      */
+    /**
+     * Sections above the workspace region, in ascending `order`, such as a
+     * roster of active agents. Declared by this package's `sidebar` entry; each
+     * section receives the column state and owns its heading, rows and rail
+     * presentation. The area takes no space while the list is empty.
+     */
+    'sidebar.sections': { kind: 'list'; scope: 'root'; owner: SidebarSectionsOwnerProps }
     'sidebar.workspaces': {
       kind: 'single'
       scope: 'root'
@@ -183,6 +190,14 @@ export interface SidebarSettingsOwnerProps {
   wide: boolean
 }
 
+/** Column state supplied to each `sidebar.sections` entry. */
+export interface SidebarSectionsOwnerProps {
+  /** Whether the sidebar renders wide content (false = 56px rail). */
+  wide: boolean
+  /** Ensure the sidebar is visible; safe to call while already expanded. */
+  expandSidebar: () => void
+}
+
 /** Owner share of an action rendered beside Settings at the sidebar foot. */
 export interface SidebarFooterActionOwnerProps {
   /** Whether the sidebar renders wide content (false = 56px rail). */
@@ -235,6 +250,7 @@ export type SidebarRootComponentProps =
     | 'sidebar.brand.name'
     | 'sidebar.toggle.badge'
     | 'sidebar.panellist.actions'
+    | 'sidebar.sections'
     | 'sidebar.workspaces'
     | 'sidebar.settings'
     | 'sidebar.footer.action'

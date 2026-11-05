@@ -10,7 +10,7 @@ import type { ReactNode } from 'react'
 import { useState } from 'react'
 import type {
   SidebarFooterActionOwnerProps, SidebarPanelMetadata, SidebarRootComponentProps, SidebarSectionHookContext, SidebarSectionOwnerProps,
-  SidebarSettingsOwnerProps,
+  SidebarSectionsOwnerProps, SidebarSettingsOwnerProps,
 } from '../src/client/contract/slots.ts'
 import { HeaderLeadingControls, type HeaderLeadingControlsProps } from '../src/client/HeaderLeadingControls.tsx'
 import { SidebarRoot } from '../src/client/SidebarRoot.tsx'
@@ -65,6 +65,7 @@ function mountShell({ collapsed = false, width = 300, drawer = false, shortcuts 
   let regionContext: SidebarSectionHookContext | undefined
   let settingsOwner: SidebarSettingsOwnerProps | undefined
   let footerActionOwner: SidebarFooterActionOwnerProps | undefined
+  let sectionsOwner: SidebarSectionsOwnerProps | undefined
   const brandMark = <span data-testid="custom-brand-mark">M</span>
   const brandName = <span data-testid="custom-brand-name">Custom Brand</span>
   let current = { collapsed, width, drawer }
@@ -97,6 +98,10 @@ function mountShell({ collapsed = false, width = 300, drawer = false, shortcuts 
           footerActionOwner = owner
           return <div data-testid="footer-action-seat" data-wide={owner.wide} />
         }
+        if (key === 'sidebar.sections') {
+          sectionsOwner = owner as SidebarSectionsOwnerProps
+          return <div data-testid="sections-seat" data-wide={owner.wide} />
+        }
         regionOwner = owner as SidebarSectionOwnerProps
         regionContext = opts?.hookContext
         return <div data-testid="region" data-wide={owner.wide}>{content}</div>
@@ -123,6 +128,10 @@ function mountShell({ collapsed = false, width = 300, drawer = false, shortcuts 
     footerActionOwner: () => {
       if (footerActionOwner === undefined) throw new Error('footer action owner not rendered')
       return footerActionOwner
+    },
+    sectionsOwner: () => {
+      if (sectionsOwner === undefined) throw new Error('sections owner not rendered')
+      return sectionsOwner
     },
     rerender(next: Partial<typeof current>) {
       current = { ...current, ...next }
@@ -382,6 +391,22 @@ describe('SidebarRoot shell', () => {
     // Expanded: the request is a no-op (no accidental collapse).
     b.regionOwner().expandSidebar()
     expect(b.toggleSidebar).not.toHaveBeenCalled()
+  })
+
+  it('renders the sections list above the workspace region with the column state', () => {
+    vi.useFakeTimers()
+    const b = mountShell()
+    const sections = screen.getByTestId('sections-seat')
+    expect(sections.compareDocumentPosition(screen.getByTestId('region')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(b.sectionsOwner().wide).toBe(true)
+    b.sectionsOwner().expandSidebar()
+    expect(b.toggleSidebar).not.toHaveBeenCalled()
+    b.rerender({ collapsed: true })
+    vi.advanceTimersByTime(200)
+    b.rerender({})
+    expect(b.sectionsOwner().wide).toBe(false)
+    b.sectionsOwner().expandSidebar()
+    expect(b.toggleSidebar).toHaveBeenCalledOnce()
   })
 
   it('keeps the region mounted through collapse and expands on its request', () => {
