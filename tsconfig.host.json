@@ -285,6 +285,7 @@
     { "path": "./packages/experimental/crew-desktop" },
     { "path": "./packages/experimental/crew-today" },
     { "path": "./packages/experimental/crew-kanban" },
+    { "path": "./packages/experimental/crew-workflows" },
     { "path": "./packages/experimental/crew-connections" },
     { "path": "./packages/experimental/crew-improve" },
 

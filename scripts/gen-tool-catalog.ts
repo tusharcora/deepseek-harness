@@ -7,7 +7,8 @@
  */
 
 import { globSync, readFileSync, writeFileSync } from 'node:fs'
-import { basename, dirname, resolve } from 'node:path'
+import { tmpdir } from 'node:os'
+import { basename, dirname, join, resolve } from 'node:path'
 import { Context } from '@deepseek-ai/cordis'
 import LlmRuntime from '@deepseek-ai/dsh-llm'
 import type { ToolSchema } from '@deepseek-ai/dsh-llm'
@@ -46,6 +47,7 @@ import * as ToolSubagentControl from '@deepseek-ai/dsh-tool-subagent-control'
 import SkillRegistry from '@deepseek-ai/dsh-skill'
 import ActionCards from '@deepseek-ai/dsh-action-cards'
 import StockCharts from '@deepseek-ai/dsh-crew-stock-chart'
+import CrewWorkflows from '@deepseek-ai/dsh-crew-workflows'
 import RemoteAccess from '@deepseek-ai/dsh-api-remote-access'
 import * as SkillFileSystem from '@deepseek-ai/dsh-skill-filesystem'
 import LocalJobRegistry from '@deepseek-ai/dsh-jobs-local'
@@ -280,6 +282,19 @@ const TOOL_PACKAGES: ToolPackage[] = [
       await ctx.plugin(StockCharts)
     },
     note: 'Fetches from the Yahoo Finance chart endpoint without a key; the browser card switches ranges and refreshes through the stockCharts Remote without a model call.',
+  },
+  {
+    pkg: '@deepseek-ai/dsh-crew-workflows',
+    dir: 'crew-workflows',
+    source: 'packages/experimental/crew-workflows/src/index.ts',
+    requires: ['ctx.tools', 'ctx.subagents', 'ctx.sessionController (runs only)'],
+    writes: ['tool/call', 'tool/result', 'a draft in the crew workflows file'],
+    async mount(ctx) {
+      await ctx.plugin(SubagentRuntime)
+      ctx.provide('sessionController', {} as never)
+      await ctx.plugin(CrewWorkflows, { homeDirectory: join(tmpdir(), 'dsh-tool-catalog-crew-workflows') })
+    },
+    note: 'Saves a draft only; the user reviews, saves and runs it from the Workflows page, and no step runs from the tool call.',
   },
   {
     pkg: '@deepseek-ai/dsh-tool-ask-user',

@@ -66,6 +66,7 @@
     { "path": "./packages/experimental/crew-kanban-ui" },
     { "path": "./packages/experimental/crew-handoff-ui" },
     { "path": "./packages/experimental/crew-tool-map-ui" },
+    { "path": "./packages/experimental/crew-workflows-ui" },
     { "path": "./packages/experimental/client-ui-creation-recommendations" },
     { "path": "./packages/experimental/client-ui-plugin-recommendations" },
     { "path": "./packages/client/ui-file-drag" },

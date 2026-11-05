@@ -25,6 +25,7 @@
 | `@deepseek-ai/dsh-experimental-browser-use-stagehand-native` | `stagehand_act`、`stagehand_extract`、`stagehand_navigate`、`stagehand_observe`、`stagehand_screenshot`、`stagehand_tabs` | `ctx.browserUse`、`ctx.agents`、`ctx.tools`、`ctx.systemPrompt` | `tool/call`、`tool/result` | - | - |
 | `@deepseek-ai/dsh-action-cards` | `propose_action` | `ctx.tools`、`ctx.agents`、`ctx.sessionProjections`、`ctx.remoteAccess` | `tool/call`、`tool/result`、`plugin:action-cards/decision`、`user/message` | - | 只向加载过已注册卡片种类 Skill 的 Agent 声明；各种类的包注册自己的动作，个性化推荐 Bundle 提供随产品发布的种类。 |
 | `@deepseek-ai/dsh-crew-stock-chart` | `ui_stock_chart` | `ctx.tools` | `tool/call`、`tool/result`（价格序列作为展示元数据） | - | 无需密钥即可从 Yahoo Finance 图表接口获取数据；浏览器卡片通过 stockCharts Remote 切换区间和刷新，不调用模型。 |
+| `@deepseek-ai/dsh-crew-workflows` | `crew_workflow_draft` | `ctx.tools`、`ctx.subagents`、`ctx.sessionController（仅运行时）` | `tool/call`、`tool/result`、crew 工作流文件中的草稿 | - | 只保存草稿；用户在工作流页面审阅、保存并运行，工具调用本身不会运行任何步骤。 |
 | `@deepseek-ai/dsh-tool-ask-user` | `ask_user_question` | `ctx.tools`、`ctx.userQuestions` | `tool/call`、`tool/result after an answer or timeout`、`late user/message` | - | ask_user_question 默认保持原有阻塞行为；设置 `mode: timed` 后才启用前台超时与 pending 结果，同时问题仍可回答；timed 模式内 `timeout: -1` 让本次调用无限期阻塞。 |
 | `@deepseek-ai/dsh-tool-executor-ptc` | `run_code` | `ctx.workingDirectory (Agent executions)`、`ctx.tools`、`ctx.ptcRuntime`、`ctx.systemPrompt` | `tool/call`、`one tool/ptc-dispatch-start + tool/ptc-dispatch pair per bridged sub-call`、`tool/result` | - | PTC 执行器只向模型公开 run_code，并在运行时语言生成的 SDK 中声明其他可见能力。程序绑定按提交顺序进入共享的受守卫工具流水线；并行安全的函数体最多重叠 maxParallelSubCalls 个，嵌套结果保持与外层程序关联。最终超时时间与 maxSubCallsPerMinute 决定调用总额度；超限会终止程序。 |
 | `@deepseek-ai/dsh-plan-mode` | `exit_plan_mode` | `ctx.tools`、`ctx.systemPrompt`、`ctx.agents`、`ctx.userQuestions (execution time, opportunistic)` | `tool/call`、`plan/mode inactive on an approved review`、`tool/result` | - | 规划未激活时，exit_plan_mode 仍保留在面向模型的 schema 中，这样状态转换不会在规划策略变更之外额外造成工具目录变动。其执行路径会拒绝规划模式之外的调用；在规划模式下，它通过用户交互 seam 提交计划（批准／根据反馈继续规划），批准后会在步骤边界记录规划模式已停用。 |
@@ -583,6 +584,57 @@
 来源：[`packages/experimental/crew-stock-chart/src/index.ts`](../packages/experimental/crew-stock-chart/src/index.ts)
 
 无需密钥即可从 Yahoo Finance 图表接口获取数据；浏览器卡片通过 stockCharts Remote 切换区间和刷新，不调用模型。
+
+<a id="deepseek-aidsh-crew-workflows"></a>
+
+## `@deepseek-ai/dsh-crew-workflows`
+
+### `crew_workflow_draft`
+
+提议一个 crew 工作流，用户可以在工作流页面审阅、编辑、保存并运行。在用户点击“运行”之前不会运行任何内容。当用户要求设置可重复的工作流时使用。智能体工作流在 crew 成员之间传递工作（preset 为 crew-chief、crew-mail、crew-chat、crew-code、crew-research、crew-life）；固定工作流只运行工具调用。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Short workflow name."
+    },
+    "description": {
+      "type": "string",
+      "description": "One sentence on what the workflow does."
+    },
+    "kind": {
+      "type": "string",
+      "description": "agentic or fixed.",
+      "enum": [
+        "agentic",
+        "fixed"
+      ]
+    },
+    "steps": {
+      "type": "array",
+      "description": "Steps in order. Agent step: { kind: \"agent\", preset, task, prompt }. Tool step: { kind: \"tool\", tool, input }. Set together: true to run a step at the same time as the step before it.",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {}
+      }
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "kind",
+    "steps"
+  ]
+}
+```
+
+来源：[`packages/experimental/crew-workflows/src/index.ts`](../packages/experimental/crew-workflows/src/index.ts)
+
+只保存草稿；用户在工作流页面审阅、保存并运行，工具调用本身不会运行任何步骤。
 
 <a id="deepseek-aidsh-tool-ask-user"></a>
 

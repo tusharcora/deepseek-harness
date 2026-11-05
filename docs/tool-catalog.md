@@ -21,6 +21,7 @@ This table connects model-visible tool names to the plugin package and service s
 | `@deepseek-ai/dsh-experimental-browser-use-stagehand-native` | `stagehand_act`, `stagehand_extract`, `stagehand_navigate`, `stagehand_observe`, `stagehand_screenshot`, `stagehand_tabs` | `ctx.browserUse`, `ctx.agents`, `ctx.tools`, `ctx.systemPrompt` | `tool/call`, `tool/result` | - | - |
 | `@deepseek-ai/dsh-action-cards` | `propose_action` | `ctx.tools`, `ctx.agents`, `ctx.sessionProjections`, `ctx.remoteAccess` | `tool/call`, `tool/result`, `plugin:action-cards/decision`, `user/message` | - | Declared only to an Agent that loaded the skill of a registered card kind; the kind packages register their actions, and the Personalized recommendations bundle supplies the shipped kinds. |
 | `@deepseek-ai/dsh-crew-stock-chart` | `ui_stock_chart` | `ctx.tools` | `tool/call`, `tool/result with the price series as presentation metadata` | - | Fetches from the Yahoo Finance chart endpoint without a key; the browser card switches ranges and refreshes through the stockCharts Remote without a model call. |
+| `@deepseek-ai/dsh-crew-workflows` | `crew_workflow_draft` | `ctx.tools`, `ctx.subagents`, `ctx.sessionController (runs only)` | `tool/call`, `tool/result`, `a draft in the crew workflows file` | - | Saves a draft only; the user reviews, saves and runs it from the Workflows page, and no step runs from the tool call. |
 | `@deepseek-ai/dsh-tool-ask-user` | `ask_user_question` | `ctx.tools`, `ctx.userQuestions` | `tool/call`, `tool/result after an answer or timeout`, `late user/message` | - | ask_user_question keeps the original blocking behavior by default; set `mode: timed` to opt into a foreground timeout and pending result while the question remains answerable. In timed mode, `timeout: -1` keeps that call blocking indefinitely. |
 | `@deepseek-ai/dsh-tool-executor-ptc` | `run_code` | `ctx.workingDirectory (Agent executions)`, `ctx.tools`, `ctx.ptcRuntime`, `ctx.systemPrompt` | `tool/call`, `one tool/ptc-dispatch-start + tool/ptc-dispatch pair per bridged sub-call`, `tool/result` | - | The PTC executor exposes only run_code to the model and declares other visible capabilities in a generated SDK in the runtime’s language. Program bindings enter the shared guarded tool pipeline in submission order; concurrency-safe bodies overlap up to maxParallelSubCalls, and nested results remain linked to the outer program. The resolved timeout and maxSubCallsPerMinute set the total call allowance; exceeding it terminates the program. |
 | `@deepseek-ai/dsh-plan-mode` | `exit_plan_mode` | `ctx.tools`, `ctx.systemPrompt`, `ctx.agents`, `ctx.userQuestions (execution time, opportunistic)` | `tool/call`, `plan/mode inactive on an approved review`, `tool/result` | - | exit_plan_mode stays in the model-facing schema while planning is inactive so transitions add no tool-catalog churn on top of the plan-policy change. Its execute path rejects calls outside plan mode; in plan mode it presents the plan over the user-questions seam (approve / keep planning with feedback), and approval logs plan mode inactive at the step boundary. |
@@ -579,6 +580,57 @@ Show the user an interactive price chart for a ticker (Yahoo Finance symbols suc
 Source: [`packages/experimental/crew-stock-chart/src/index.ts`](../packages/experimental/crew-stock-chart/src/index.ts)
 
 Fetches from the Yahoo Finance chart endpoint without a key; the browser card switches ranges and refreshes through the stockCharts Remote without a model call.
+
+<a id="deepseek-aidsh-crew-workflows"></a>
+
+## `@deepseek-ai/dsh-crew-workflows`
+
+### `crew_workflow_draft`
+
+Propose a crew workflow the user can review, edit, save and run from the Workflows page. Nothing runs until the user clicks Run. Use it when the user asks you to set up a repeatable workflow. An agentic workflow hands work between crew members (presets crew-chief, crew-mail, crew-chat, crew-code, crew-research, crew-life); a fixed workflow runs tool calls only.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Short workflow name."
+    },
+    "description": {
+      "type": "string",
+      "description": "One sentence on what the workflow does."
+    },
+    "kind": {
+      "type": "string",
+      "description": "agentic or fixed.",
+      "enum": [
+        "agentic",
+        "fixed"
+      ]
+    },
+    "steps": {
+      "type": "array",
+      "description": "Steps in order. Agent step: { kind: \"agent\", preset, task, prompt }. Tool step: { kind: \"tool\", tool, input }. Set together: true to run a step at the same time as the step before it.",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {}
+      }
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "kind",
+    "steps"
+  ]
+}
+```
+
+Source: [`packages/experimental/crew-workflows/src/index.ts`](../packages/experimental/crew-workflows/src/index.ts)
+
+Saves a draft only; the user reviews, saves and runs it from the Workflows page, and no step runs from the tool call.
 
 <a id="deepseek-aidsh-tool-ask-user"></a>
 

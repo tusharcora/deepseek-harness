@@ -308,6 +308,50 @@ Reads the Today page's account data.
 
 Source: [`packages/experimental/crew-today/src/index.ts`](../../packages/experimental/crew-today/src/index.ts)
 
+<a id="ctxcrewworkflows--crewworkflows"></a>
+
+### `ctx.crewWorkflows` — `CrewWorkflows`
+
+Saved workflows, runs, and the page's Remote.
+
+```ts cordis-catalog
+/**
+ * Saved workflows and recent runs.
+ * @returns the page state.
+ */
+@Remote('state') async state(): Promise<WorkflowsState>
+
+/**
+ * Save a workflow, replacing one with the same id; saving clears its draft mark.
+ * @param definition - the workflow.
+ * @returns the saved workflow, or why it cannot be saved.
+ */
+@Remote('save') async save(definition: WorkflowDefinition): Promise<WorkflowsResult<WorkflowDefinition>>
+
+/**
+ * Delete a saved workflow; its past runs stay listed.
+ * @param id - workflow id.
+ * @returns success.
+ */
+@Remote('remove') async remove(id: string): Promise<WorkflowsResult>
+
+/**
+ * Start a saved workflow. It runs in the background; the page follows it through `state`.
+ * @param id - workflow id.
+ * @returns the new run id, or why it cannot run.
+ */
+@Remote('run') async run(id: string): Promise<WorkflowsResult<string>>
+
+/**
+ * Cancel a running workflow; steps already running are stopped.
+ * @param runId - run id.
+ * @returns success, or that the run is not running.
+ */
+@Remote('cancel') cancel(runId: string): Promise<WorkflowsResult>
+```
+
+Source: [`packages/experimental/crew-workflows/src/index.ts`](../../packages/experimental/crew-workflows/src/index.ts)
+
 <a id="ctxheadlessstartup--headlessstartupvalues"></a>
 
 ### `ctx.headlessStartup` — `HeadlessStartupValues`
