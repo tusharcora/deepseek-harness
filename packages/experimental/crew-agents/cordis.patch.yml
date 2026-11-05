@@ -16,6 +16,22 @@
       name: '@deepseek-ai/dsh-crew-faces'
     - id: crew-agents-ui
       name: '@deepseek-ai/dsh-crew-agents-ui'
+    - id: crew-chain-of-thought
+      name: '@deepseek-ai/dsh-crew-chain-of-thought'
+    - id: crew-kanban
+      name: '@deepseek-ai/dsh-crew-kanban'
+    - id: crew-kanban-ui
+      name: '@deepseek-ai/dsh-crew-kanban-ui'
+    - id: crew-handoff-ui
+      name: '@deepseek-ai/dsh-crew-handoff-ui'
+    - id: crew-tool-map-ui
+      name: '@deepseek-ai/dsh-crew-tool-map-ui'
+    - id: crew-workflows
+      name: '@deepseek-ai/dsh-crew-workflows'
+      config:
+        homeDirectory: !!js dshHomePath('crew')
+    - id: crew-workflows-ui
+      name: '@deepseek-ai/dsh-crew-workflows-ui'
     - id: preset-crew-chief
       name: '@deepseek-ai/dsh-agent-preset'
       config:

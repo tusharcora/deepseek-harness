@@ -1015,6 +1015,19 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'crewKanban',
+    summary: 'Moves Team tasks for the board.',
+    description: 'Moves Team tasks for the board.',
+    methods: [
+      {
+        signature: '@Remote(\'move\') async move(agent: Agent, taskId: string, expectedRevision: number, from: KanbanColumn, to: KanbanColumn): Promise<KanbanMoveResult>',
+        description: 'Move one task from `from` to `to` as the Session\'s Team Lead.',
+        parameters: [{ name: 'agent', description: 'the Lead Session\'s Agent, resolved from the calling Session.' }, { name: 'taskId', description: 'task to move.' }, { name: 'expectedRevision', description: 'revision the board showed; a newer one refuses the move.' }, { name: 'from', description: 'column the card was in.' }, { name: 'to', description: 'target column.' }],
+        returns: 'the new revision, or why the move was refused.',
+      },
+    ],
+  },
+  {
     key: 'crewToday',
     summary: 'Reads the Today page\'s account data.',
     description: 'Reads the Today page\'s account data.',
@@ -1030,6 +1043,43 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         description: 'Open GitHub pull requests involving the user.',
         parameters: [],
         returns: 'pull requests with source and fetch time, or why there are none.',
+      },
+    ],
+  },
+  {
+    key: 'crewWorkflows',
+    summary: 'Saved workflows, runs, and the page\'s Remote.',
+    description: 'Saved workflows, runs, and the page\'s Remote.',
+    methods: [
+      {
+        signature: '@Remote(\'state\') async state(): Promise<WorkflowsState>',
+        description: 'Saved workflows and recent runs.',
+        parameters: [],
+        returns: 'the page state.',
+      },
+      {
+        signature: '@Remote(\'save\') async save(definition: WorkflowDefinition): Promise<WorkflowsResult<WorkflowDefinition>>',
+        description: 'Save a workflow, replacing one with the same id; saving clears its draft mark.',
+        parameters: [{ name: 'definition', description: 'the workflow.' }],
+        returns: 'the saved workflow, or why it cannot be saved.',
+      },
+      {
+        signature: '@Remote(\'deleteWorkflow\') async deleteWorkflow(id: string): Promise<WorkflowsResult>',
+        description: 'Delete a saved workflow; its past runs stay listed.',
+        parameters: [{ name: 'id', description: 'workflow id.' }],
+        returns: 'success.',
+      },
+      {
+        signature: '@Remote(\'run\') async run(id: string): Promise<WorkflowsResult<string>>',
+        description: 'Start a saved workflow. It runs in the background; the page follows it through `state`.',
+        parameters: [{ name: 'id', description: 'workflow id.' }],
+        returns: 'the new run id, or why it cannot run.',
+      },
+      {
+        signature: '@Remote(\'cancel\') cancel(runId: string): Promise<WorkflowsResult>',
+        description: 'Cancel a running workflow; steps already running are stopped.',
+        parameters: [{ name: 'runId', description: 'run id.' }],
+        returns: 'success, or that the run is not running.',
       },
     ],
   },
@@ -5718,6 +5768,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type AgentStatus = \'idle\' | \'running\';',
   },
   {
+    name: 'AgentStep',
+    declaration: 'export interface AgentStep {\n    readonly id: string;\n    readonly kind: \'agent\';\n    readonly preset: string;\n    readonly task: string;\n    readonly prompt: string;\n    readonly together?: boolean;\n}',
+  },
+  {
     name: 'AnalyticsPreset',
     declaration: 'export type AnalyticsPreset = \'creator\' | \'ptc\' | \'minimal\' | \'standard\';',
   },
@@ -7092,6 +7146,14 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'JsonValue',
     declaration: 'export type JsonValue = null | boolean | number | string | JsonValue[] | {\n    [key: string]: JsonValue;\n};',
+  },
+  {
+    name: 'KanbanColumn',
+    declaration: 'export type KanbanColumn = \'blocked\' | \'todo\' | \'in_progress\' | \'done\';',
+  },
+  {
+    name: 'KanbanMoveResult',
+    declaration: 'export type KanbanMoveResult = {\n    readonly ok: true;\n    readonly revision: number;\n} | {\n    readonly ok: false;\n    readonly message: string;\n};',
   },
   {
     name: 'KnownSubagentCatalogFields',
@@ -9374,6 +9436,14 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type StagedAttachment = {\n    readonly type: \'file\';\n    readonly attachment: FileAttachmentRef;\n} | {\n    readonly type: \'image\';\n    readonly attachment: ImageAttachmentRef;\n    readonly encodedBytes: number;\n};',
   },
   {
+    name: 'StepRun',
+    declaration: 'export interface StepRun {\n    readonly stepId: string;\n    readonly status: StepStatus;\n    readonly sessionId?: string;\n    readonly startedAt?: number;\n    readonly endedAt?: number;\n    readonly output?: string;\n    readonly error?: string;\n}',
+  },
+  {
+    name: 'StepStatus',
+    declaration: 'export type StepStatus = \'pending\' | \'running\' | \'done\' | \'failed\' | \'skipped\';',
+  },
+  {
     name: 'StockFailureCode',
     declaration: 'export type StockFailureCode = \'invalid-symbol\' | \'not-found\' | \'unavailable\' | \'bad-response\';',
   },
@@ -9946,6 +10016,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export class ToolsService extends Service {\n    static inject;\n    static Config;\n    constructor(ctx: Context);\n    register(definition: ToolDefinition, options: ToolRegistrationOptions = {}): () => void;\n    restrict(filter: ToolRestriction): () => void;\n    get(name: string, scope?: ScopeKey, toolSet?: ResolvedToolSet): ToolDefinition | undefined;\n    executable(name: string, scope?: ScopeKey, toolSet?: ResolvedToolSet): ToolDefinition | undefined;\n    async resolve(context: ToolActivationContext): Promise<ResolvedToolSet>;\n    definitions(scope?: ScopeKey, toolSet?: ResolvedToolSet): readonly ToolDefinition[];\n    schemas(scope?: ScopeKey, toolSet?: ResolvedToolSet): ToolSchema[];\n    setExecutor(executor: ToolExecutor): () => void;\n    async execute(input: ToolBatchInput): Promise<ToolBatchResult>;\n    guard(guard: ToolGuard): () => void;\n    checkGuards(exec: ToolExecution): string | undefined;\n}',
   },
   {
+    name: 'ToolStep',
+    declaration: 'export interface ToolStep {\n    readonly id: string;\n    readonly kind: \'tool\';\n    readonly tool: string;\n    readonly input: {\n        readonly [key: string]: JsonValue;\n    };\n    readonly together?: boolean;\n}',
+  },
+  {
     name: 'ToolUpdate',
     declaration: 'export type ToolUpdate = \'in-history\' | \'addition-only\';',
   },
@@ -10346,6 +10420,14 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type WorkflowAgentOutcome = \'completed\' | \'failed\' | \'cancelled\';',
   },
   {
+    name: 'WorkflowDefinition',
+    declaration: 'export interface WorkflowDefinition {\n    readonly id: string;\n    readonly name: string;\n    readonly description: string;\n    readonly kind: WorkflowKind;\n    readonly cwd?: string;\n    readonly steps: readonly WorkflowStep[];\n    readonly draft?: boolean;\n    readonly updatedAt: string;\n}',
+  },
+  {
+    name: 'WorkflowKind',
+    declaration: 'export type WorkflowKind = \'agentic\' | \'fixed\';',
+  },
+  {
     name: 'WorkflowMeta',
     declaration: 'export interface WorkflowMeta {\n    name: string;\n    description: string;\n    whenToUse?: string;\n    phases?: WorkflowPhase[];\n}',
   },
@@ -10374,8 +10456,24 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface WorkflowRunInfo {\n    id: WorkflowRunId;\n    meta: WorkflowMeta;\n}',
   },
   {
+    name: 'WorkflowRunRecord',
+    declaration: 'export interface WorkflowRunRecord {\n    readonly runId: string;\n    readonly workflowId: string;\n    readonly name: string;\n    readonly kind: WorkflowKind;\n    readonly sessionId: string;\n    readonly status: \'running\' | \'completed\' | \'failed\' | \'cancelled\';\n    readonly startedAt: number;\n    readonly endedAt?: number;\n    readonly steps: readonly WorkflowStep[];\n    readonly progress: readonly StepRun[];\n}',
+  },
+  {
+    name: 'WorkflowsResult',
+    declaration: 'export type WorkflowsResult<T = true> = {\n    readonly ok: true;\n    readonly value: T;\n} | {\n    readonly ok: false;\n    readonly message: string;\n};',
+  },
+  {
+    name: 'WorkflowsState',
+    declaration: 'export interface WorkflowsState {\n    readonly workflows: readonly WorkflowDefinition[];\n    readonly runs: readonly WorkflowRunRecord[];\n}',
+  },
+  {
     name: 'WorkflowStartRequest',
     declaration: 'export interface WorkflowStartRequest {\n    script: string;\n    meta: WorkflowMeta;\n    args?: unknown;\n    subagentProvider?: string;\n    maxTotalAgents?: number;\n    parent: Agent;\n    signal?: AbortSignal;\n}',
+  },
+  {
+    name: 'WorkflowStep',
+    declaration: 'export type WorkflowStep = AgentStep | ToolStep;',
   },
   {
     name: 'WorkflowStopReason',

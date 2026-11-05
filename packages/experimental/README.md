@@ -51,6 +51,13 @@ Promotion requires a named product role, documented public behavior and limitati
 | [`crew-desktop-ui`](crew-desktop-ui/README.md) | Desktop tab: latest screenshot, Pause and Take over | — |
 | [`crew-today`](crew-today/README.md) | Crew today bundle: calendar and pull-request reads, with the Today page | `ctx.crewToday` |
 | [`crew-today-ui`](crew-today-ui/README.md) | Today page and its sidebar entry | — |
+| [`crew-chain-of-thought`](crew-chain-of-thought/README.md) | Chain-of-thought card: each Turn's steps, timings and sources, live | — |
+| [`crew-kanban`](crew-kanban/README.md) | Moves Team tasks between board columns as the Team Lead | `ctx.crewKanban` |
+| [`crew-kanban-ui`](crew-kanban-ui/README.md) | Board tab for a Session's Team tasks | `ctx.crewBoards` |
+| [`crew-handoff-ui`](crew-handoff-ui/README.md) | Handoffs tab: agent cards and the tasks handed to each | `ctx.crewHandoffs` |
+| [`crew-tool-map-ui`](crew-tool-map-ui/README.md) | Tools tab: each agent's tool access and every call | `ctx.crewToolMaps` |
+| [`crew-workflows`](crew-workflows/README.md) | Saved agentic and fixed workflows, their runner and a draft tool | `ctx.crewWorkflows` |
+| [`crew-workflows-ui`](crew-workflows-ui/README.md) | Workflows page below Automations | - |
 | [`crew-improve`](crew-improve/README.md) | Crew learning: lessons proposed from ratings and corrections, approved in the Crew tab | `ctx.crewImprove` |
 | [`crew-stock-chart`](crew-stock-chart/README.md) | Stock chart tool over Yahoo Finance and the quote Remote the card refreshes through | `ctx.stockCharts` |
 | [`crew-stock-chart-ui`](crew-stock-chart-ui/README.md) | Interactive stock chart card beneath answers and the tool row | — |

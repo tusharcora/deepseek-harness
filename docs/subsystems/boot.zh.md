@@ -263,6 +263,29 @@ Types: [Session](session.zh.md)
 
 Source: [`packages/experimental/crew-improve/src/index.ts`](../../packages/experimental/crew-improve/src/index.ts)
 
+<a id="ctxcrewkanban--crewkanban"></a>
+
+### `ctx.crewKanban` — `CrewKanban`
+
+Moves Team tasks for the board.
+
+```ts cordis-catalog
+/**
+ * Move one task from `from` to `to` as the Session's Team Lead.
+ * @param agent - the Lead Session's Agent, resolved from the calling Session.
+ * @param taskId - task to move.
+ * @param expectedRevision - revision the board showed; a newer one refuses the move.
+ * @param from - column the card was in.
+ * @param to - target column.
+ * @returns the new revision, or why the move was refused.
+ */
+@Remote('move') async move(agent: Agent, taskId: string, expectedRevision: number, from: KanbanColumn, to: KanbanColumn): Promise<KanbanMoveResult>
+```
+
+Types: [Agent](core.zh.md)
+
+Source: [`packages/experimental/crew-kanban/src/index.ts`](../../packages/experimental/crew-kanban/src/index.ts)
+
 <a id="ctxcrewtoday--crewtoday"></a>
 
 ### `ctx.crewToday` — `CrewToday`
@@ -284,6 +307,50 @@ Reads the Today page's account data.
 ```
 
 Source: [`packages/experimental/crew-today/src/index.ts`](../../packages/experimental/crew-today/src/index.ts)
+
+<a id="ctxcrewworkflows--crewworkflows"></a>
+
+### `ctx.crewWorkflows` — `CrewWorkflows`
+
+Saved workflows, runs, and the page's Remote.
+
+```ts cordis-catalog
+/**
+ * Saved workflows and recent runs.
+ * @returns the page state.
+ */
+@Remote('state') async state(): Promise<WorkflowsState>
+
+/**
+ * Save a workflow, replacing one with the same id; saving clears its draft mark.
+ * @param definition - the workflow.
+ * @returns the saved workflow, or why it cannot be saved.
+ */
+@Remote('save') async save(definition: WorkflowDefinition): Promise<WorkflowsResult<WorkflowDefinition>>
+
+/**
+ * Delete a saved workflow; its past runs stay listed.
+ * @param id - workflow id.
+ * @returns success.
+ */
+@Remote('deleteWorkflow') async deleteWorkflow(id: string): Promise<WorkflowsResult>
+
+/**
+ * Start a saved workflow. It runs in the background; the page follows it through `state`.
+ * @param id - workflow id.
+ * @returns the new run id, or why it cannot run.
+ */
+@Remote('run') async run(id: string): Promise<WorkflowsResult<string>>
+
+/**
+ * Cancel a running workflow; steps already running are stopped.
+ * @param runId - run id.
+ * @returns success, or that the run is not running.
+ */
+@Remote('cancel') cancel(runId: string): Promise<WorkflowsResult>
+```
+
+Source: [`packages/experimental/crew-workflows/src/index.ts`](../../packages/experimental/crew-workflows/src/index.ts)
 
 <a id="ctxheadlessstartup--headlessstartupvalues"></a>
 

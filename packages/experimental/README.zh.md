@@ -51,6 +51,13 @@ kind: "package-group"
 | [`crew-desktop-ui`](crew-desktop-ui/README.zh.md) | 桌面标签页：最新截图、暂停与接管 | — |
 | [`crew-today`](crew-today/README.zh.md) | Crew 今日 bundle：日历与拉取请求读取及今日页面 | `ctx.crewToday` |
 | [`crew-today-ui`](crew-today-ui/README.zh.md) | 今日页面及其侧边栏入口 | — |
+| [`crew-chain-of-thought`](crew-chain-of-thought/README.zh.md) | 思考链卡片：实时显示每个回合的步骤、用时和来源 | — |
+| [`crew-kanban`](crew-kanban/README.zh.md) | 以团队负责人身份在看板列之间移动团队任务 | `ctx.crewKanban` |
+| [`crew-kanban-ui`](crew-kanban-ui/README.zh.md) | Session 团队任务的看板标签页 | `ctx.crewBoards` |
+| [`crew-handoff-ui`](crew-handoff-ui/README.zh.md) | 交接标签页：智能体卡片及交给各自的任务 | `ctx.crewHandoffs` |
+| [`crew-tool-map-ui`](crew-tool-map-ui/README.zh.md) | 工具标签页：每个智能体的工具权限和每次调用 | `ctx.crewToolMaps` |
+| [`crew-workflows`](crew-workflows/README.zh.md) | 保存的智能体工作流与固定工作流、运行器和草稿工具 | `ctx.crewWorkflows` |
+| [`crew-workflows-ui`](crew-workflows-ui/README.zh.md) | 位于自动化下方的工作流页面 | - |
 | [`crew-improve`](crew-improve/README.zh.md) | Crew 学习：从评分和纠正中提出经验，在 Crew 标签页中批准 | `ctx.crewImprove` |
 | [`crew-stock-chart`](crew-stock-chart/README.zh.md) | 基于 Yahoo Finance 的股票图表工具及卡片刷新所用的报价 Remote | `ctx.stockCharts` |
 | [`crew-stock-chart-ui`](crew-stock-chart-ui/README.zh.md) | 回答下方的交互式股票图表卡片与工具行 | — |
