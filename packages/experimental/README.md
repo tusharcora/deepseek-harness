@@ -51,6 +51,7 @@ Promotion requires a named product role, documented public behavior and limitati
 | [`crew-desktop-ui`](crew-desktop-ui/README.md) | Desktop tab: latest screenshot, Pause and Take over | — |
 | [`crew-today`](crew-today/README.md) | Crew today bundle: calendar and pull-request reads, with the Today page | `ctx.crewToday` |
 | [`crew-today-ui`](crew-today-ui/README.md) | Today page and its sidebar entry | — |
+| [`crew-chain-of-thought`](crew-chain-of-thought/README.md) | Chain-of-thought card: each Turn's steps, timings and sources, live | — |
 | [`crew-improve`](crew-improve/README.md) | Crew learning: lessons proposed from ratings and corrections, approved in the Crew tab | `ctx.crewImprove` |
 | [`crew-stock-chart`](crew-stock-chart/README.md) | Stock chart tool over Yahoo Finance and the quote Remote the card refreshes through | `ctx.stockCharts` |
 | [`crew-stock-chart-ui`](crew-stock-chart-ui/README.md) | Interactive stock chart card beneath answers and the tool row | — |

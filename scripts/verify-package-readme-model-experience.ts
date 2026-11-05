@@ -63,6 +63,7 @@ const SENTENCE_MODEL_EXPERIENCE: Readonly<Record<string, SentenceContract>> = {
   'packages/experimental/crew-agents-ui': { kind: 'none', reason: 'Folds browser Session status into a crew roster without adding model input or Session events.' },
   'packages/experimental/crew-stock-chart-ui': { kind: 'none', reason: 'Draws recorded stock series and refreshes them through a Remote without adding model input or Session events.' },
   'packages/experimental/crew-today': { kind: 'none', reason: 'Reads calendar events and pull requests for the browser through a Remote without adding model input or Session events.' },
+  'packages/experimental/crew-chain-of-thought': { kind: 'none', reason: 'Folds recorded Session events into a Chat card without adding model input or Session events.' },
   'packages/experimental/crew-today-ui': { kind: 'none', reason: 'Draws the Today page from Remote reads and the crew roster without adding model input or Session events.' },
   'packages/experimental/crew-desktop': { kind: 'none', reason: 'Reports the computer-use provider and Host to the browser through a Remote without adding model input or Session events.' },
   'packages/experimental/crew-desktop-ui': { kind: 'none', reason: 'Shows the latest tool-result screenshot and stops turns through the Session controller without adding model input or Session events.' },

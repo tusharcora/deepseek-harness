@@ -62,6 +62,7 @@
     { "path": "./packages/experimental/crew-stock-chart-ui" },
     { "path": "./packages/experimental/crew-desktop-ui" },
     { "path": "./packages/experimental/crew-today-ui" },
+    { "path": "./packages/experimental/crew-chain-of-thought" },
     { "path": "./packages/experimental/client-ui-creation-recommendations" },
     { "path": "./packages/experimental/client-ui-plugin-recommendations" },
     { "path": "./packages/client/ui-file-drag" },
