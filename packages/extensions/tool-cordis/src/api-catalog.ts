@@ -1015,6 +1015,19 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'crewKanban',
+    summary: 'Moves Team tasks for the board.',
+    description: 'Moves Team tasks for the board.',
+    methods: [
+      {
+        signature: '@Remote(\'move\') async move(agent: Agent, taskId: string, expectedRevision: number, from: KanbanColumn, to: KanbanColumn): Promise<KanbanMoveResult>',
+        description: 'Move one task from `from` to `to` as the Session\'s Team Lead.',
+        parameters: [{ name: 'agent', description: 'the Lead Session\'s Agent, resolved from the calling Session.' }, { name: 'taskId', description: 'task to move.' }, { name: 'expectedRevision', description: 'revision the board showed; a newer one refuses the move.' }, { name: 'from', description: 'column the card was in.' }, { name: 'to', description: 'target column.' }],
+        returns: 'the new revision, or why the move was refused.',
+      },
+    ],
+  },
+  {
     key: 'crewToday',
     summary: 'Reads the Today page\'s account data.',
     description: 'Reads the Today page\'s account data.',
@@ -7092,6 +7105,14 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'JsonValue',
     declaration: 'export type JsonValue = null | boolean | number | string | JsonValue[] | {\n    [key: string]: JsonValue;\n};',
+  },
+  {
+    name: 'KanbanColumn',
+    declaration: 'export type KanbanColumn = \'blocked\' | \'todo\' | \'in_progress\' | \'done\';',
+  },
+  {
+    name: 'KanbanMoveResult',
+    declaration: 'export type KanbanMoveResult = {\n    readonly ok: true;\n    readonly revision: number;\n} | {\n    readonly ok: false;\n    readonly message: string;\n};',
   },
   {
     name: 'KnownSubagentCatalogFields',

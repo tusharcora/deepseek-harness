@@ -284,6 +284,7 @@
     { "path": "./packages/experimental/crew-stock-chart" },
     { "path": "./packages/experimental/crew-desktop" },
     { "path": "./packages/experimental/crew-today" },
+    { "path": "./packages/experimental/crew-kanban" },
     { "path": "./packages/experimental/crew-connections" },
     { "path": "./packages/experimental/crew-improve" },
 

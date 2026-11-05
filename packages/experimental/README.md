@@ -52,6 +52,8 @@ Promotion requires a named product role, documented public behavior and limitati
 | [`crew-today`](crew-today/README.md) | Crew today bundle: calendar and pull-request reads, with the Today page | `ctx.crewToday` |
 | [`crew-today-ui`](crew-today-ui/README.md) | Today page and its sidebar entry | — |
 | [`crew-chain-of-thought`](crew-chain-of-thought/README.md) | Chain-of-thought card: each Turn's steps, timings and sources, live | — |
+| [`crew-kanban`](crew-kanban/README.md) | Moves Team tasks between board columns as the Team Lead | `ctx.crewKanban` |
+| [`crew-kanban-ui`](crew-kanban-ui/README.md) | Board tab for a Session's Team tasks | `ctx.crewBoards` |
 | [`crew-improve`](crew-improve/README.md) | Crew learning: lessons proposed from ratings and corrections, approved in the Crew tab | `ctx.crewImprove` |
 | [`crew-stock-chart`](crew-stock-chart/README.md) | Stock chart tool over Yahoo Finance and the quote Remote the card refreshes through | `ctx.stockCharts` |
 | [`crew-stock-chart-ui`](crew-stock-chart-ui/README.md) | Interactive stock chart card beneath answers and the tool row | — |

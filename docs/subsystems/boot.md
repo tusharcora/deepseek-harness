@@ -263,6 +263,29 @@ Types: [Session](session.md)
 
 Source: [`packages/experimental/crew-improve/src/index.ts`](../../packages/experimental/crew-improve/src/index.ts)
 
+<a id="ctxcrewkanban--crewkanban"></a>
+
+### `ctx.crewKanban` — `CrewKanban`
+
+Moves Team tasks for the board.
+
+```ts cordis-catalog
+/**
+ * Move one task from `from` to `to` as the Session's Team Lead.
+ * @param agent - the Lead Session's Agent, resolved from the calling Session.
+ * @param taskId - task to move.
+ * @param expectedRevision - revision the board showed; a newer one refuses the move.
+ * @param from - column the card was in.
+ * @param to - target column.
+ * @returns the new revision, or why the move was refused.
+ */
+@Remote('move') async move(agent: Agent, taskId: string, expectedRevision: number, from: KanbanColumn, to: KanbanColumn): Promise<KanbanMoveResult>
+```
+
+Types: [Agent](core.md)
+
+Source: [`packages/experimental/crew-kanban/src/index.ts`](../../packages/experimental/crew-kanban/src/index.ts)
+
 <a id="ctxcrewtoday--crewtoday"></a>
 
 ### `ctx.crewToday` — `CrewToday`

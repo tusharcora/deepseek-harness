@@ -62,6 +62,8 @@ const SENTENCE_MODEL_EXPERIENCE: Readonly<Record<string, SentenceContract>> = {
   'packages/experimental/crew-faces': { kind: 'none', reason: 'Draws agent faces in the browser without adding model input or Session events.' },
   'packages/experimental/crew-agents-ui': { kind: 'none', reason: 'Folds browser Session status into a crew roster without adding model input or Session events.' },
   'packages/experimental/crew-stock-chart-ui': { kind: 'none', reason: 'Draws recorded stock series and refreshes them through a Remote without adding model input or Session events.' },
+  'packages/experimental/crew-kanban': { kind: 'none', reason: 'Moves Team tasks for the browser board through a Remote; task events are the Team service\'s own and add no model input.' },
+  'packages/experimental/crew-kanban-ui': { kind: 'none', reason: 'Draws the Team task board from its projection without adding model input or Session events.' },
   'packages/experimental/crew-today': { kind: 'none', reason: 'Reads calendar events and pull requests for the browser through a Remote without adding model input or Session events.' },
   'packages/experimental/crew-chain-of-thought': { kind: 'none', reason: 'Folds recorded Session events into a Chat card without adding model input or Session events.' },
   'packages/experimental/crew-today-ui': { kind: 'none', reason: 'Draws the Today page from Remote reads and the crew roster without adding model input or Session events.' },

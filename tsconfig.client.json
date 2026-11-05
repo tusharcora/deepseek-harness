@@ -63,6 +63,7 @@
     { "path": "./packages/experimental/crew-desktop-ui" },
     { "path": "./packages/experimental/crew-today-ui" },
     { "path": "./packages/experimental/crew-chain-of-thought" },
+    { "path": "./packages/experimental/crew-kanban-ui" },
     { "path": "./packages/experimental/client-ui-creation-recommendations" },
     { "path": "./packages/experimental/client-ui-plugin-recommendations" },
     { "path": "./packages/client/ui-file-drag" },
