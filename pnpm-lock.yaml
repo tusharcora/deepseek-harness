@@ -10447,6 +10447,9 @@ importers:
       '@deepseek-ai/dsh-crew-agents-ui':
         specifier: workspace:*
         version: link:../crew-agents-ui
+      '@deepseek-ai/dsh-crew-faces':
+        specifier: workspace:*
+        version: link:../crew-faces
       '@deepseek-ai/dsh-crew-handoff-ui':
         specifier: workspace:*
         version: link:../crew-handoff-ui
