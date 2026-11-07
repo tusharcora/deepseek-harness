@@ -9673,6 +9673,12 @@ importers:
       '@deepseek-ai/dsh-crew-connections':
         specifier: workspace:*
         version: link:../crew-connections
+      '@deepseek-ai/dsh-crew-desktop':
+        specifier: workspace:*
+        version: link:../crew-desktop
+      '@deepseek-ai/dsh-crew-desktop-ui':
+        specifier: workspace:*
+        version: link:../crew-desktop-ui
       '@deepseek-ai/dsh-crew-faces':
         specifier: workspace:*
         version: link:../crew-faces
@@ -9694,6 +9700,18 @@ importers:
       '@deepseek-ai/dsh-crew-slack':
         specifier: workspace:*
         version: link:../crew-slack
+      '@deepseek-ai/dsh-crew-stock-chart':
+        specifier: workspace:*
+        version: link:../crew-stock-chart
+      '@deepseek-ai/dsh-crew-stock-chart-ui':
+        specifier: workspace:*
+        version: link:../crew-stock-chart-ui
+      '@deepseek-ai/dsh-crew-today':
+        specifier: workspace:*
+        version: link:../crew-today
+      '@deepseek-ai/dsh-crew-today-ui':
+        specifier: workspace:*
+        version: link:../crew-today-ui
       '@deepseek-ai/dsh-crew-tool-map-ui':
         specifier: workspace:*
         version: link:../crew-tool-map-ui
