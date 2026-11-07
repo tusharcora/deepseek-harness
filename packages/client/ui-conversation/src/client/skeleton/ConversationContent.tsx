@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import type { WorkspaceId } from '@deepseek-ai/dsh-workspace/types'
+import type { SessionId } from '@deepseek-ai/dsh-session/types'
 import { workspaceDisplayTitle } from '@deepseek-ai/dsh-api-workspace-controller/default-workspace'
 import type { ConversationContentProps, ConversationViewsProps, InputZone } from '../contract/slots.ts'
 import { HeroShell, WorkspaceChip, workspaceLabel } from './EmptyHero.tsx'
@@ -69,6 +70,13 @@ export function ConversationContent(props: ConversationContentProps) {
   const sessionWorkspace = sessionId === undefined
     ? undefined
     : workspaces.items.find(workspace => workspace.sessionIds.includes(sessionId))
+  // A Session seen in a Workspace that then leaves the ready list was deleted out from under it; one that never
+  // belonged to a Workspace (a crew member's own chat) keeps its own directory and stays usable.
+  const [orphanedFrom, setOrphanedFrom] = useState<SessionId | undefined>()
+  useEffect(() => {
+    if (sessionId !== undefined && sessionWorkspace !== undefined) setOrphanedFrom(sessionId)
+  }, [sessionId, sessionWorkspace])
+  const orphaned = sessionId !== undefined && orphanedFrom === sessionId && sessionWorkspace === undefined
   const pendingWorkspace = workspaces.items.find(
     workspace => workspace.workspaceId === pendingWorkspaceId,
   )
@@ -92,15 +100,16 @@ export function ConversationContent(props: ConversationContentProps) {
   //   3. the blank session's workspace is in the list → its title;
   //   4. list still loading → cwd folder name bridges so the title does not
   //      flash on refresh (empty cwd → placeholder);
-  //   5. list ready but no owning workspace (deleted from the sidebar) →
-  //      placeholder, never the deleted folder's name via cwd.
+  //   5. list ready and its workspace was deleted from the sidebar →
+  //      placeholder, never the deleted folder's name via cwd;
+  //   6. list ready and the session never had a workspace → its cwd folder name.
   // A title still automatic reads in the reader's language, matching the
   // sidebar row the same Workspace has there.
   const storedChipTitle = pendingWorkspace?.title
     ?? (sessionId === undefined
       ? undefined
       : sessionWorkspace?.title
-        ?? (workspaces.phase === 'ready' || cwd === undefined || cwd === ''
+        ?? ((workspaces.phase === 'ready' && orphaned) || cwd === undefined || cwd === ''
           ? undefined
           : workspaceLabel(cwd)))
   const chipTitle = storedChipTitle === undefined

@@ -131,6 +131,8 @@ function mount(
     overlayTakeover?: boolean
     /** The session list summary's `blank` flag — independent of the snapshot's. */
     summaryBlank?: boolean
+    /** The selected session's directory; defaults to `/projects/one`. */
+    cwd?: string
     /** Drop the session's summary row entirely (a session the list has not caught up with). */
     omitSummaryRow?: boolean
     /** Classify the selected child as a subagent instead of an ordinary fork. */
@@ -159,7 +161,7 @@ function mount(
   }
   const childRow = {
     id: SID, displayTitle: 'Child', parentId: options.nestedSubagent === true ? parent : root,
-    cwd: '/projects/one', running: false, retainedBy: { mainView: 1 }, blank: options.summaryBlank ?? false, updatedAt: 3,
+    cwd: options.cwd ?? '/projects/one', running: false, retainedBy: { mainView: 1 }, blank: options.summaryBlank ?? false, updatedAt: 3,
     ...(options.summaryOrigin === undefined ? {} : { origin: options.summaryOrigin }),
   }
   const listed = options.omitSummaryRow !== true
@@ -407,7 +409,8 @@ function mount(
   const props: ConversationSlotProps = { ...runtimeProps, renderSlot, renderFactorySlot }
   const view = render(<ConversationMainPanel {...props} />)
   return {
-    view, store, wiring, sink, retargetWorkspace, session, conversation, slotCalls, headerFactory, lineageOwners, seatOwners, open,
+    view, store, wiring, sink, retargetWorkspace, session, workspaces, conversation, slotCalls, headerFactory,
+    lineageOwners, seatOwners, open,
     pickerOwner: () => pickerOwner,
     frameOwner: () => frameOwners.at(-1),
     setPinned,
@@ -486,11 +489,29 @@ describe('ConversationRoot resident composer', () => {
     expect(seat('conversation.input.plan')).toEqual({ locked: true })
   })
 
+  it('keeps a blank session that never had a workspace usable in its own directory', () => {
+    // A crew member's own chat: created with a cwd, never listed in any Workspace.
+    const b = mount(sessionSnapshotOf({ blank: true }), [], undefined, { summaryBlank: true })
+    const box = b.view.getByRole('textbox')
+    expect(box.getAttribute('aria-disabled')).not.toBe('true')
+    expect(box.getAttribute('aria-haspopup')).toBeNull()
+    expect(b.view.getByText('one')).toBeTruthy()
+  })
+
+  it('locks a blank session whose workspace is deleted from under it', () => {
+    const b = mount(sessionSnapshotOf({ blank: true }), undefined, undefined, { summaryBlank: true })
+    expect(b.view.getByRole('textbox').getAttribute('aria-haspopup')).toBeNull()
+    act(() => { b.workspaces.set(workspaceState([])) })
+    expect(b.view.getByRole('textbox').getAttribute('aria-haspopup')).toBe('menu')
+    expect(b.view.queryByText('one')).toBeNull()
+  })
+
   it('lets the no-workspace posture win over a block', () => {
     // Picking a workspace is the earlier prerequisite; naming a model first
     // would send the user somewhere they cannot act yet.
     const b = mount(sessionSnapshotOf({ blank: true }), [], undefined, {
       summaryBlank: true,
+      cwd: '',
       composerBlock: { reason: 'select a model first' },
     })
     const box = b.view.getByRole('textbox')
