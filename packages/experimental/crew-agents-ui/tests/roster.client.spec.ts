@@ -7,7 +7,7 @@ import { SessionId } from '@deepseek-ai/dsh-session/types'
 import type { WorkspaceId, WorkspaceSnapshot } from '@deepseek-ai/dsh-api-workspace-controller/client'
 import { CrewRoster, latestWorkspace, type CrewActions } from '../src/client/crew-roster.ts'
 import type { CrewMember } from '@deepseek-ai/dsh-crew-roster/types'
-import { crewRoster } from '../src/roster.ts'
+import { crewRoster, memberChats } from '../src/roster.ts'
 
 function row(id: string, agentPreset: string | undefined, running = false, open = false, updatedAt = 0): SessionSummary {
   return {
@@ -244,5 +244,18 @@ describe('latestWorkspace', () => {
 
   it('is undefined without workspaces', () => {
     expect(latestWorkspace(snapshot([]))).toBeUndefined()
+  })
+})
+
+describe('memberChats', () => {
+  it('picks crew-preset Sessions outside every workspace, in list order', () => {
+    const state = list(row('own-1', 'crew-code'), row('ws-1', 'crew-code'), row('plain', undefined), row('other', 'standard'), row('own-2', 'crew-mail'))
+    expect(memberChats(state, new Set([SessionId('ws-1')]), new Set(['crew-code', 'crew-mail'])))
+      .toEqual([SessionId('own-1'), SessionId('own-2')])
+  })
+
+  it('falls back to the member folder when a row has no preset yet', () => {
+    const state = list({ ...row('uncached', undefined), cwd: '/home/u/.dsh/crew/crew-code' }, { ...row('elsewhere', undefined), cwd: '/home/u/crew-code' })
+    expect(memberChats(state, new Set(), new Set(['crew-code']))).toEqual([SessionId('uncached')])
   })
 })

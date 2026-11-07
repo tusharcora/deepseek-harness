@@ -921,6 +921,7 @@ export function WorkspaceBrowser({
   useHostInfo,
   useShortcuts,
   useWorkspaceShortcuts,
+  useHiddenUngrouped,
   requestSearch,
   requestAddWorkspace,
   closeAddWorkspace,
@@ -984,9 +985,10 @@ export function WorkspaceBrowser({
     () => ({ pinnedSessionIds, archivedSessionIds }),
     [archivedSessionIds, pinnedSessionIds],
   )
+  const hiddenUngroupedIds = useHiddenUngrouped(ids => ids)
   const rowState = useMemo<SessionRowState>(
-    () => ({ ...orderState, archivedFilter }),
-    [orderState, archivedFilter],
+    () => ({ ...orderState, archivedFilter, hiddenUngroupedIds }),
+    [orderState, archivedFilter, hiddenUngroupedIds],
   )
   const flatMemberIds = useMemo(() => sessionMemberIds(list), [list])
   const orderedWorkspaces = useMemo(() => workspaces.map((workspace) => {

@@ -252,6 +252,17 @@ describe('Session ordering', () => {
 })
 
 describe('deriveGroups', () => {
+  it('leaves Sessions another plugin hides out of Ungrouped, open or not', () => {
+    const sessions = list(summary('loose', 10), summary('member', 20), summary('kept', 30))
+    const hidden = { ...noRows, hiddenUngroupedIds: new Set([sid('member'), sid('kept')]) }
+    const ungrouped = (state: SessionListState) =>
+      deriveGroups(state, [], hidden, noAttention, view([UNGROUPED_KEY])).find(group => group.key === UNGROUPED_KEY)
+    expect(ungrouped(sessions)?.sessions.map(session => session.id)).toEqual([sid('loose')])
+    expect(ungrouped(withMain(sessions, sid('kept')))?.sessions.map(session => session.id)).toEqual([sid('loose')])
+    const onlyHidden = list(summary('member', 20))
+    expect(ungrouped(onlyHidden)).toBeUndefined()
+  })
+
   it('keeps caller-supplied Workspace and sessionIds order', () => {
     const sessions = list(summary('newer', 20), summary('older', 10))
     const workspaces = [workspace('first', ['older', 'newer']), workspace('empty', [])]
