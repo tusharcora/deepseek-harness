@@ -149,7 +149,7 @@ export async function apply(ctx: Context): Promise<() => Promise<void>> {
           connections: store.source, learning: learning.source,
         },
         Face, clearEditRequest: () => { roster.requestEdit(undefined) },
-        openChat: id => roster.openChat(id), saveMember: member => roster.save(member), removeMember: id => roster.remove(id),
+        openChat: id => roster.openHome(id), saveMember: member => roster.save(member), removeMember: id => roster.remove(id),
         nameOf: id => roster.name(id),
         slackStatus: () => settle(() => remote.crewSlack.status()),
         slackReconnect: async () => { await settle(() => remote.crewSlack.reconnect()) },

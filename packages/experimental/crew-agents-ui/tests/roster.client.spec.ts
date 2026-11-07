@@ -154,6 +154,25 @@ describe('CrewRoster', () => {
     expect(act.createChat).not.toHaveBeenCalled()
   })
 
+  it('opens the member\'s own chat from the Crew tab even while a workspace chat is running', async () => {
+    const act = actions()
+    const roster = await loaded(new CrewRoster(
+      source(list(row('home-1', 'crew-code', false, false, 1), row('ws-1', 'crew-code', true, false, 2))),
+      source<SessionStatusSnapshot>(new Map()), source(places([SessionId('ws-1')])), t, act, host()))
+    expect(await roster.openHome('crew-code')).toBe(true)
+    expect(act.openSession).toHaveBeenCalledWith(SessionId('home-1'))
+    expect(act.createChat).not.toHaveBeenCalled()
+  })
+
+  it('creates the own chat from the Crew tab when the member only has workspace chats', async () => {
+    const act = actions()
+    const roster = await loaded(new CrewRoster(source(list(row('ws-1', 'crew-code'))), source<SessionStatusSnapshot>(new Map()),
+      source(places([SessionId('ws-1')])), t, act, host()))
+    expect(await roster.openHome('crew-code')).toBe(true)
+    expect(act.createChat).toHaveBeenCalledWith('crew-code')
+    expect(act.openSession).toHaveBeenCalledWith(SessionId('new-chat'))
+  })
+
   it('creates a member\'s own chat outside any workspace when it has none, and reports failure', async () => {
     const act = actions()
     const roster = await loaded(new CrewRoster(...empty(), t, act, host()))
