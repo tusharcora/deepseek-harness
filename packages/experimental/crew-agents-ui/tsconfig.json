@@ -64,6 +64,12 @@
     },
     {
       "path": "../crew-roster"
+    },
+    {
+      "path": "../crew-slack"
+    },
+    {
+      "path": "../../subagent/subagent"
     }
   ]
 }

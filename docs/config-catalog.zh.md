@@ -855,6 +855,148 @@ export interface Config {
 ```
 <!-- END GENERATED config-catalog:@deepseek-ai/dsh-credentials-local -->
 
+<!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-crew-connections -->
+<a id="deepseek-aidsh-crew-connections"></a>
+
+## `@deepseek-ai/dsh-crew-connections`
+
+- `inject`: `credentials` · `authorization`
+- `source`: [`packages/experimental/crew-connections/src/index.ts:42`](../packages/experimental/crew-connections/src/index.ts)
+
+```ts config-catalog
+/** Plugin config. */
+export interface Config {
+  /** Directory holding one folder per crew member, where chats outside any workspace run. */
+  homeDirectory: string
+  /** Loopback redirect URI registered on the Google OAuth client. */
+  googleRedirectUri: string
+  /** Refresh the access token this many seconds before it expires. */
+  refreshMarginSeconds: number
+  /** Seconds to wait for the browser to return from Google. */
+  signInTimeoutSeconds: number
+}
+```
+<!-- END GENERATED config-catalog:@deepseek-ai/dsh-crew-connections -->
+
+<!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-crew-improve -->
+<a id="deepseek-aidsh-crew-improve"></a>
+
+## `@deepseek-ai/dsh-crew-improve`
+
+- `inject`: `llm` · `agentPresets`
+- `source`: [`packages/experimental/crew-improve/src/index.ts:43`](../packages/experimental/crew-improve/src/index.ts)
+
+```ts config-catalog
+/** Plugin config. */
+export interface Config {
+  /** Crew home directory; learning is stored in `learning.json` inside it. */
+  homeDirectory: string
+  /** Reflect after this many new user messages in a crew conversation; 0 reflects only on ratings. */
+  reflectEveryUserMessages: number
+  /** Wait this long after the last trigger before reflecting, so a rating and its note arrive together. */
+  debounceSeconds: number
+  /** Most approved lessons a member keeps; approving more needs one removed first. */
+  maxLessonsPerMember: number
+  /** Transcript budget sent to the reflector, in characters. */
+  maxTranscriptChars: number
+  /** Reflector output-token cap. */
+  maxOutputTokens: number
+  /** Reflector deadline in milliseconds. */
+  timeoutMs: number
+  /** Reflector provider; with `model`, overrides the conversation's own route. */
+  provider?: string
+  /** Reflector model; with `provider`, overrides the conversation's own route. */
+  model?: string
+}
+```
+<!-- END GENERATED config-catalog:@deepseek-ai/dsh-crew-improve -->
+
+<!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-crew-roster -->
+<a id="deepseek-aidsh-crew-roster"></a>
+
+## `@deepseek-ai/dsh-crew-roster`
+
+- `inject`: `agentPresets` · `tools`
+- `source`: [`packages/experimental/crew-roster/src/index.ts:37`](../packages/experimental/crew-roster/src/index.ts)
+
+```ts config-catalog
+/** Plugin config. */
+export interface Config {
+  /** Folder holding `members.json`. */
+  homeDirectory: string
+}
+```
+<!-- END GENERATED config-catalog:@deepseek-ai/dsh-crew-roster -->
+
+<!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-crew-slack -->
+<a id="deepseek-aidsh-crew-slack"></a>
+
+## `@deepseek-ai/dsh-crew-slack`
+
+- `inject`: `credentials` · `sessionController` · `crewRoster`
+- `source`: [`packages/experimental/crew-slack/src/index.ts:49`](../packages/experimental/crew-slack/src/index.ts)
+
+```ts config-catalog
+/** Plugin config. */
+export interface Config {
+  /** Folder holding `slack.json` (threads and drafts) and the folder chats run in when no member folder exists. */
+  homeDirectory: string
+  /** Slack user ids besides the owner whose messages the crew answers. */
+  allowedUsers: string[]
+  /** Member that answers a new thread naming nobody. */
+  fallbackMember: string
+  /** Minutes to wait for a member's reply before giving up on it. */
+  replyTimeoutMinutes: number
+  /** Drafts kept in the file, newest first. */
+  keepDrafts: number
+}
+```
+<!-- END GENERATED config-catalog:@deepseek-ai/dsh-crew-slack -->
+
+<!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-crew-stock-chart -->
+<a id="deepseek-aidsh-crew-stock-chart"></a>
+
+## `@deepseek-ai/dsh-crew-stock-chart`
+
+- `inject`: `tools`
+- `source`: [`packages/experimental/crew-stock-chart/src/index.ts:26`](../packages/experimental/crew-stock-chart/src/index.ts)
+
+```ts config-catalog
+/** Plugin config. */
+export interface Config {
+  /** Yahoo chart endpoint up to `/chart`. */
+  baseUrl: string
+  /** Request deadline in milliseconds. */
+  timeoutMs: number
+  /** Seconds between automatic browser refreshes of an open card. */
+  refreshSeconds: number
+  /** `User-Agent` sent to Yahoo, which refuses requests without one. */
+  userAgent: string
+}
+```
+<!-- END GENERATED config-catalog:@deepseek-ai/dsh-crew-stock-chart -->
+
+<!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-crew-workflows -->
+<a id="deepseek-aidsh-crew-workflows"></a>
+
+## `@deepseek-ai/dsh-crew-workflows`
+
+- `inject`: `tools` · `subagents` · `sessionController`
+- `source`: [`packages/experimental/crew-workflows/src/index.ts:40`](../packages/experimental/crew-workflows/src/index.ts)
+
+```ts config-catalog
+/** Plugin config. */
+export interface Config {
+  /** Folder holding `workflows.json`; runs without a folder of their own work in `workflows/` under it. */
+  homeDirectory: string
+  /** Subagent provider agent steps start on. */
+  provider: string
+  /** Finished runs kept for the page. */
+  keepRuns: number
+}
+```
+<!-- END GENERATED config-catalog:@deepseek-ai/dsh-crew-workflows -->
+
 <!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-deepseek-account-platform -->
 <a id="deepseek-aidsh-deepseek-account-platform"></a>
 
@@ -4969,6 +5111,19 @@ export interface Config {
 | `@deepseek-ai/dsh-config-editor` | `loader` · `profileContext` | [`packages/boot/config-editor/src/index.ts`](../packages/boot/config-editor/src/index.ts) |
 | `@deepseek-ai/dsh-cordis-client-runner` | — | [`packages/extensions/cordis-client-runner/src/index.ts`](../packages/extensions/cordis-client-runner/src/index.ts) |
 | `@deepseek-ai/dsh-creation-recommendations` | `tools` · `pluginManager` · `agents` · `subagents` · `profileContext` · `skills` · `actionCards` | [`packages/experimental/creation-recommendations/src/index.ts`](../packages/experimental/creation-recommendations/src/index.ts) |
+| `@deepseek-ai/dsh-crew-agents-ui` | — | [`packages/experimental/crew-agents-ui/src/index.ts`](../packages/experimental/crew-agents-ui/src/index.ts) |
+| `@deepseek-ai/dsh-crew-chain-of-thought` | — | [`packages/experimental/crew-chain-of-thought/src/index.ts`](../packages/experimental/crew-chain-of-thought/src/index.ts) |
+| `@deepseek-ai/dsh-crew-desktop` | — | [`packages/experimental/crew-desktop/src/index.ts`](../packages/experimental/crew-desktop/src/index.ts) |
+| `@deepseek-ai/dsh-crew-desktop-ui` | — | [`packages/experimental/crew-desktop-ui/src/index.ts`](../packages/experimental/crew-desktop-ui/src/index.ts) |
+| `@deepseek-ai/dsh-crew-faces` | — | [`packages/experimental/crew-faces/src/index.ts`](../packages/experimental/crew-faces/src/index.ts) |
+| `@deepseek-ai/dsh-crew-handoff-ui` | — | [`packages/experimental/crew-handoff-ui/src/index.ts`](../packages/experimental/crew-handoff-ui/src/index.ts) |
+| `@deepseek-ai/dsh-crew-kanban` | `agentTeams` · `subagents` | [`packages/experimental/crew-kanban/src/index.ts`](../packages/experimental/crew-kanban/src/index.ts) |
+| `@deepseek-ai/dsh-crew-kanban-ui` | — | [`packages/experimental/crew-kanban-ui/src/index.ts`](../packages/experimental/crew-kanban-ui/src/index.ts) |
+| `@deepseek-ai/dsh-crew-stock-chart-ui` | — | [`packages/experimental/crew-stock-chart-ui/src/index.ts`](../packages/experimental/crew-stock-chart-ui/src/index.ts) |
+| `@deepseek-ai/dsh-crew-today` | `credentials` | [`packages/experimental/crew-today/src/index.ts`](../packages/experimental/crew-today/src/index.ts) |
+| `@deepseek-ai/dsh-crew-today-ui` | — | [`packages/experimental/crew-today-ui/src/index.ts`](../packages/experimental/crew-today-ui/src/index.ts) |
+| `@deepseek-ai/dsh-crew-tool-map-ui` | — | [`packages/experimental/crew-tool-map-ui/src/index.ts`](../packages/experimental/crew-tool-map-ui/src/index.ts) |
+| `@deepseek-ai/dsh-crew-workflows-ui` | — | [`packages/experimental/crew-workflows-ui/src/index.ts`](../packages/experimental/crew-workflows-ui/src/index.ts) |
 | `@deepseek-ai/dsh-cua` | — | [`packages/experimental/cua/src/index.ts`](../packages/experimental/cua/src/index.ts) |
 | `@deepseek-ai/dsh-deepseek-llm-api-extensions` | — | [`packages/llm/deepseek-llm-api-extensions/src/index.ts`](../packages/llm/deepseek-llm-api-extensions/src/index.ts) |
 | `@deepseek-ai/dsh-deliverable-file-references` | `systemPrompt` | [`packages/deliverables/deliverable-file-references/src/index.ts`](../packages/deliverables/deliverable-file-references/src/index.ts) |
@@ -5061,6 +5216,7 @@ export interface Config {
 | `@deepseek-ai/dsh-client-ui-slots` | — | [`packages/client/ui-slots/src/index.ts`](../packages/client/ui-slots/src/index.ts) |
 | `@deepseek-ai/dsh-client-web` | — | [`packages/client/web/src/index.ts`](../packages/client/web/src/index.ts) |
 | `@deepseek-ai/dsh-cmdline` | — | [`packages/boot/cmdline/src/index.ts`](../packages/boot/cmdline/src/index.ts) |
+| `@deepseek-ai/dsh-crew-agents` | — | [`packages/experimental/crew-agents/src/index.ts`](../packages/experimental/crew-agents/src/index.ts) |
 | `@deepseek-ai/dsh-cua-bundle` | — | [`packages/experimental/cua-bundle/src/index.ts`](../packages/experimental/cua-bundle/src/index.ts) |
 | `@deepseek-ai/dsh-deque` | — | [`packages/util/deque/src/index.ts`](../packages/util/deque/src/index.ts) |
 | `@deepseek-ai/dsh-experimental-badge-skill-bundle` | — | [`packages/experimental/badge-skill-bundle/src/index.ts`](../packages/experimental/badge-skill-bundle/src/index.ts) |

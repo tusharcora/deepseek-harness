@@ -33,13 +33,14 @@ const preset = (id: string): PresetConfig => {
 }
 const SPECIALISTS = ['crew-mail', 'crew-chat', 'crew-code', 'crew-research', 'crew-life', 'crew-design']
 
-it('inserts the connections, learning, roster, faces, browser roster and crew pages in one layer, and no static presets', () => {
+it('inserts every crew package in one layer, the stock chart before the Today page that uses it, and no static presets', () => {
   expect(patch).toHaveLength(1)
   expect(rows[0]?.config?.['homeDirectory']).toBeDefined()
   expect(rows.map(({ id, name }) => ({ id, name }))).toEqual([
     { id: 'crew-connections', name: '@deepseek-ai/dsh-crew-connections' },
     { id: 'crew-improve', name: '@deepseek-ai/dsh-crew-improve' },
     { id: 'crew-roster', name: '@deepseek-ai/dsh-crew-roster' },
+    { id: 'crew-slack', name: '@deepseek-ai/dsh-crew-slack' },
     { id: 'crew-faces', name: '@deepseek-ai/dsh-crew-faces' },
     { id: 'crew-agents-ui', name: '@deepseek-ai/dsh-crew-agents-ui' },
     { id: 'crew-chain-of-thought', name: '@deepseek-ai/dsh-crew-chain-of-thought' },
@@ -49,6 +50,12 @@ it('inserts the connections, learning, roster, faces, browser roster and crew pa
     { id: 'crew-tool-map-ui', name: '@deepseek-ai/dsh-crew-tool-map-ui' },
     { id: 'crew-workflows', name: '@deepseek-ai/dsh-crew-workflows' },
     { id: 'crew-workflows-ui', name: '@deepseek-ai/dsh-crew-workflows-ui' },
+    { id: 'crew-stock-chart', name: '@deepseek-ai/dsh-crew-stock-chart' },
+    { id: 'crew-stock-chart-ui', name: '@deepseek-ai/dsh-crew-stock-chart-ui' },
+    { id: 'crew-desktop', name: '@deepseek-ai/dsh-crew-desktop' },
+    { id: 'crew-desktop-ui', name: '@deepseek-ai/dsh-crew-desktop-ui' },
+    { id: 'crew-today', name: '@deepseek-ai/dsh-crew-today' },
+    { id: 'crew-today-ui', name: '@deepseek-ai/dsh-crew-today-ui' },
   ])
   expect(presets.map(entry => entry.id)).toEqual(['crew-chief', ...SPECIALISTS])
   expect(new Set(rows.map(row => row.id)).size).toBe(rows.length)

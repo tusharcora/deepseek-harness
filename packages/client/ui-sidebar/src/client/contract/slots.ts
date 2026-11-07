@@ -48,6 +48,13 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
     /** Rows of the panel list's More menu; the sidebar shows More only while this list has registrations. */
     'sidebar.panellist.actions': { kind: 'list'; scope: 'root'; owner: SidebarPanelActionsOwnerProps }
     /**
+     * Sections above the workspace region, in ascending `order`, such as a
+     * roster of active agents. Declared by this package's `sidebar` entry; each
+     * section receives the column state and owns its heading, rows and rail
+     * presentation. The area takes no space while the list is empty.
+     */
+    'sidebar.sections': { kind: 'list'; scope: 'root'; owner: SidebarSectionsOwnerProps }
+    /**
      * The workspace/session browsing region: section header, search, the
      * grouped/flat session list, and every workspace dialog. Declared by this
      * package's 'sidebar' entry (declaring is claiming); ui-workspace
@@ -55,13 +62,6 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      * which is a size container one viewport tall and a scroll-state container,
      * and binds its own vertical scroller through `useSectionScroller`.
      */
-    /**
-     * Sections above the workspace region, in ascending `order`, such as a
-     * roster of active agents. Declared by this package's `sidebar` entry; each
-     * section receives the column state and owns its heading, rows and rail
-     * presentation. The area takes no space while the list is empty.
-     */
-    'sidebar.sections': { kind: 'list'; scope: 'root'; owner: SidebarSectionsOwnerProps }
     'sidebar.workspaces': {
       kind: 'single'
       scope: 'root'

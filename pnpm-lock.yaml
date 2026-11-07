@@ -9673,6 +9673,12 @@ importers:
       '@deepseek-ai/dsh-crew-connections':
         specifier: workspace:*
         version: link:../crew-connections
+      '@deepseek-ai/dsh-crew-desktop':
+        specifier: workspace:*
+        version: link:../crew-desktop
+      '@deepseek-ai/dsh-crew-desktop-ui':
+        specifier: workspace:*
+        version: link:../crew-desktop-ui
       '@deepseek-ai/dsh-crew-faces':
         specifier: workspace:*
         version: link:../crew-faces
@@ -9691,6 +9697,21 @@ importers:
       '@deepseek-ai/dsh-crew-roster':
         specifier: workspace:*
         version: link:../crew-roster
+      '@deepseek-ai/dsh-crew-slack':
+        specifier: workspace:*
+        version: link:../crew-slack
+      '@deepseek-ai/dsh-crew-stock-chart':
+        specifier: workspace:*
+        version: link:../crew-stock-chart
+      '@deepseek-ai/dsh-crew-stock-chart-ui':
+        specifier: workspace:*
+        version: link:../crew-stock-chart-ui
+      '@deepseek-ai/dsh-crew-today':
+        specifier: workspace:*
+        version: link:../crew-today
+      '@deepseek-ai/dsh-crew-today-ui':
+        specifier: workspace:*
+        version: link:../crew-today-ui
       '@deepseek-ai/dsh-crew-tool-map-ui':
         specifier: workspace:*
         version: link:../crew-tool-map-ui
@@ -9818,9 +9839,15 @@ importers:
       '@deepseek-ai/dsh-crew-roster':
         specifier: workspace:*
         version: link:../crew-roster
+      '@deepseek-ai/dsh-crew-slack':
+        specifier: workspace:*
+        version: link:../crew-slack
       '@deepseek-ai/dsh-session':
         specifier: workspace:*
         version: link:../../core/session
+      '@deepseek-ai/dsh-subagent':
+        specifier: workspace:*
+        version: link:../../subagent/subagent
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -9982,6 +10009,9 @@ importers:
       '@deepseek-ai/dsh-client-test-runtime':
         specifier: workspace:*
         version: link:../../test-support/client-runtime
+      '@deepseek-ai/dsh-client-ui-primitives':
+        specifier: workspace:*
+        version: link:../../client/ui-primitives
       '@deepseek-ai/dsh-client-ui-renderer':
         specifier: workspace:*
         version: link:../../client/ui-renderer
@@ -10140,6 +10170,40 @@ importers:
       '@deepseek-ai/dsh-tools':
         specifier: workspace:*
         version: link:../../core/tools
+      '@deepseek-ai/dsh-typert-protocol':
+        specifier: workspace:*
+        version: link:../../typert/protocol
+
+  packages/experimental/crew-slack:
+    dependencies:
+      '@deepseek-ai/dsh-atomic-write':
+        specifier: workspace:*
+        version: link:../../util/atomic-write
+      '@deepseek-ai/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-api-session-controller':
+        specifier: workspace:*
+        version: link:../../api/session-controller
+      '@deepseek-ai/dsh-credentials':
+        specifier: workspace:*
+        version: link:../../credentials/credentials
+      '@deepseek-ai/dsh-crew-connections':
+        specifier: workspace:*
+        version: link:../crew-connections
+      '@deepseek-ai/dsh-crew-roster':
+        specifier: workspace:*
+        version: link:../crew-roster
+      '@deepseek-ai/dsh-session':
+        specifier: workspace:*
+        version: link:../../core/session
+      '@deepseek-ai/dsh-session-title':
+        specifier: workspace:*
+        version: link:../../session/session-title
       '@deepseek-ai/dsh-typert-protocol':
         specifier: workspace:*
         version: link:../../typert/protocol
@@ -10401,6 +10465,9 @@ importers:
       '@deepseek-ai/dsh-crew-agents-ui':
         specifier: workspace:*
         version: link:../crew-agents-ui
+      '@deepseek-ai/dsh-crew-faces':
+        specifier: workspace:*
+        version: link:../crew-faces
       '@deepseek-ai/dsh-crew-handoff-ui':
         specifier: workspace:*
         version: link:../crew-handoff-ui

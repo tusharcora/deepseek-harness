@@ -1053,6 +1053,31 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'crewSlack',
+    summary: 'The Slack connection, thread Sessions and reply drafts.',
+    description: 'The Slack connection, thread Sessions and reply drafts.',
+    methods: [
+      {
+        signature: '@Remote(\'status\') status(): Promise<SlackStatus>',
+        description: 'Where the connection stands and the recent drafts.',
+        parameters: [],
+        returns: 'the status.',
+      },
+      {
+        signature: '@Remote(\'reconnect\') async reconnect(): Promise<SlackState>',
+        description: 'Reconnect, for example after the tokens were stored.',
+        parameters: [],
+        returns: 'the state after the attempt.',
+      },
+      {
+        signature: '@Remote(\'decide\') async decide(id: string, action: \'post\' | \'discard\', text?: string): Promise<SlackResult>',
+        description: 'Post or discard a pending draft. Posting is the only way a crew reply reaches Slack.',
+        parameters: [{ name: 'id', description: 'draft id.' }, { name: 'action', description: '`post` or `discard`.' }, { name: 'text', description: 'edited reply text to post instead of the draft\'s.' }],
+        returns: 'success, or why nothing happened.',
+      },
+    ],
+  },
+  {
     key: 'crewToday',
     summary: 'Reads the Today page\'s account data.',
     description: 'Reads the Today page\'s account data.',
@@ -9395,6 +9420,22 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'SkillViewOptions',
     declaration: 'export interface SkillViewOptions extends SkillLookupOptions {\n    readonly scope?: ScopeKey | undefined;\n}',
+  },
+  {
+    name: 'SlackDraft',
+    declaration: 'export interface SlackDraft {\n    readonly id: string;\n    readonly member: string;\n    readonly sessionId: string;\n    readonly channel: string;\n    readonly threadTs: string;\n    readonly askedBy: string;\n    readonly question: string;\n    readonly text: string;\n    readonly status: \'pending\' | \'posted\' | \'discarded\';\n    readonly createdAt: string;\n    readonly card?: {\n        readonly channel: string;\n        readonly ts: string;\n    };\n}',
+  },
+  {
+    name: 'SlackResult',
+    declaration: 'export type SlackResult<T = true> = {\n    readonly ok: true;\n    readonly value: T;\n} | {\n    readonly ok: false;\n    readonly message: string;\n};',
+  },
+  {
+    name: 'SlackState',
+    declaration: 'export type SlackState = \'needs-tokens\' | \'connecting\' | \'connected\' | \'failed\' | \'off\';',
+  },
+  {
+    name: 'SlackStatus',
+    declaration: 'export interface SlackStatus {\n    readonly state: SlackState;\n    readonly detail?: string;\n    readonly drafts: readonly SlackDraft[];\n}',
   },
   {
     name: 'SpeechCatalog',
