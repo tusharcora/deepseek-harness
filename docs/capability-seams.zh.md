@@ -317,6 +317,27 @@ flowchart LR
   svc_cordisInspect["ctx.cordisInspect<br/>Dynamic Cordis inspect registry"]
   pkg_experimental_liveshare["experimental-liveshare"]
   svc_liveshareShares["ctx.liveshareShares<br/>Owner share management Remote"]
+  pkg_crew_connections["crew-connections"]
+  svc_crewConnections["ctx.crewConnections<br/>Crew account connections"]
+  pkg_crew_desktop["crew-desktop"]
+  svc_crewDesktop["ctx.crewDesktop<br/>Crew computer-use location"]
+  pkg_crew_improve["crew-improve"]
+  svc_crewImprove["ctx.crewImprove<br/>Crew learning"]
+  pkg_crew_kanban["crew-kanban"]
+  svc_crewKanban["ctx.crewKanban<br/>Crew board moves"]
+  pkg_crew_roster["crew-roster"]
+  svc_crewRoster["ctx.crewRoster<br/>Crew roster"]
+  pkg_crew_slack["crew-slack"]
+  svc_crewSlack["ctx.crewSlack<br/>Crew Slack"]
+  pkg_crew_today["crew-today"]
+  svc_crewToday["ctx.crewToday<br/>Today page data"]
+  pkg_crew_today_ui["crew-today-ui"]
+  pkg_crew_workflows["crew-workflows"]
+  svc_crewWorkflows["ctx.crewWorkflows<br/>Crew workflows"]
+  pkg_crew_workflows_ui["crew-workflows-ui"]
+  pkg_crew_stock_chart["crew-stock-chart"]
+  svc_stockCharts["ctx.stockCharts<br/>Stock charts"]
+  pkg_crew_stock_chart_ui["crew-stock-chart-ui"]
   pkg_action_cards --> svc_actionCards
   pkg_agent --> svc_agents
   pkg_agent_default_model --> svc_agentDefaultModel
@@ -358,6 +379,15 @@ flowchart LR
   pkg_cordis_host_runner --> svc_dynamicCordisRunner
   pkg_credentials --> svc_credentials
   pkg_credentials_local --> svc_credentials
+  pkg_crew_connections --> svc_crewConnections
+  pkg_crew_desktop --> svc_crewDesktop
+  pkg_crew_improve --> svc_crewImprove
+  pkg_crew_kanban --> svc_crewKanban
+  pkg_crew_roster --> svc_crewRoster
+  pkg_crew_slack --> svc_crewSlack
+  pkg_crew_stock_chart --> svc_stockCharts
+  pkg_crew_today --> svc_crewToday
+  pkg_crew_workflows --> svc_crewWorkflows
   pkg_cua --> svc_cuaAccess
   pkg_deepseek_account --> svc_deepseekAccount
   pkg_deepseek_account_platform --> svc_deepseekAccount
@@ -516,6 +546,9 @@ flowchart LR
   svc_credentials --> pkg_api_settings_controller
   svc_credentials --> pkg_llm_deepseek
   svc_credentials --> pkg_llm_pi_ai
+  svc_crewRoster --> pkg_crew_slack
+  svc_crewToday --> pkg_crew_today_ui
+  svc_crewWorkflows --> pkg_crew_workflows_ui
   svc_cuaAccess --> pkg_cua
   svc_deepseekAccount --> pkg_api_account_controller
   svc_deepseekAccount --> pkg_llm_deepseek
@@ -594,6 +627,8 @@ flowchart LR
   svc_ssh --> pkg_fs_ssh
   svc_ssh --> pkg_sandbox_ssh
   svc_ssh --> pkg_subprocess_ssh
+  svc_stockCharts --> pkg_crew_stock_chart_ui
+  svc_stockCharts --> pkg_crew_today_ui
   svc_storage --> pkg_storage_domain
   svc_storageDomain --> pkg_workspace
   svc_subagentModelSelection --> pkg_tool_subagent
@@ -760,5 +795,14 @@ flowchart LR
 | `ctx.dynamicCordisRunner` | `core` | [`cordis-host-runner`](../packages/extensions/cordis-host-runner) | - | [`tool-cordis`](../packages/extensions/tool-cordis) | - | 拥有内存定义注册表、Host 半的 vm 沙箱和 request-run 往返流程；浏览器页面通过其 Remote 命名空间在线访问同一服务。 |
 | `ctx.cordisInspect` | `core` | [`cordis-host-runner`](../packages/extensions/cordis-host-runner) | - | [`tool-cordis`](../packages/extensions/tool-cordis) | - | 注册 Host inspect 提供方、镜像 Client 提供方 manifest，并通过动态 Cordis 传输路由 Client 查询。 |
 | `ctx.liveshareShares` | `service` | [`experimental-liveshare`](../packages/experimental/liveshare) | - | - | - | 以单个 Typert Remote 命名空间发布 owner 分享管理操作，供 owner 客户端面调用；每个方法都委托给同源路由原先使用的同一组操作。 |
+| `ctx.crewConnections` | `service` | [`crew-connections`](../packages/experimental/crew-connections) | - | - | - | 让 crew 成员登录 Google、刷新其令牌，并防止 crew 预设在没有操作卡片的情况下发送、发布、删除、合并或预订。 |
+| `ctx.crewDesktop` | `service` | [`crew-desktop`](../packages/experimental/crew-desktop) | - | - | - | 为桌面标签页报告 crew 使用哪个电脑使用提供方以及运行在哪台主机上。 |
+| `ctx.crewImprove` | `service` | [`crew-improve`](../packages/experimental/crew-improve) | - | - | - | 保存为每位成员批准的教训，根据评分和修正提出新的教训，并对已结束的 crew 对话进行反思。 |
+| `ctx.crewKanban` | `service` | [`crew-kanban`](../packages/experimental/crew-kanban) | - | - | - | 以 Team Lead 身份在看板列之间移动 Team 任务；Host 校验每一次移动。 |
+| `ctx.crewRoster` | `service` | [`crew-roster`](../packages/experimental/crew-roster) | - | [`crew-slack`](../packages/experimental/crew-slack) | - | 把 crew 成员存储在磁盘上，并为每位成员注册一个智能体预设。 |
+| `ctx.crewSlack` | `service` | [`crew-slack`](../packages/experimental/crew-slack) | - | - | - | 每位成员在各自的 Session 中回答 Slack 提及，每条回复只在用户批准后才发布。 |
+| `ctx.crewToday` | `service` | [`crew-today`](../packages/experimental/crew-today) | - | [`crew-today-ui`](../packages/experimental/crew-today-ui) | - | 为今日页面读取本周的日历事件和未合并的拉取请求。 |
+| `ctx.crewWorkflows` | `service` | [`crew-workflows`](../packages/experimental/crew-workflows) | - | [`crew-workflows-ui`](../packages/experimental/crew-workflows-ui) | - | 保存智能体工作流和固定工作流，并在一个负责人 Session 下逐步运行它们。 |
+| `ctx.stockCharts` | `service` | [`crew-stock-chart`](../packages/experimental/crew-stock-chart) | - | [`crew-stock-chart-ui`](../packages/experimental/crew-stock-chart-ui), [`crew-today-ui`](../packages/experimental/crew-today-ui) | - | 通过 Yahoo Finance chart 端点提供股票图表工具及其报价 Remote。 |
 
 维护模式：混合模式。服务从 Cordis 声明中发现；接口、实现和消费方角色在 `scripts/gen-doc-graphs.ts` 中分类，并设有完整性守卫。

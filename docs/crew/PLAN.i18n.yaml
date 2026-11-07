@@ -1,0 +1,34 @@
+# Bilingual-pair consistency record for PLAN.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write docs/crew/PLAN.md
+/crew-plugins-plan:
+  en: 94db16d3c866bc33
+  zh: 6c24f93dbaea6e6c
+/crew-plugins-plan/shared-conventions:
+  en: 512844252f6e6ab3
+  zh: 955351c97e4b6fc7
+/crew-plugins-plan/1-crew-faces:
+  en: 4ae9a218614747ee
+  zh: 0f88a599bc62a7f2
+/crew-plugins-plan/2-crew-agents:
+  en: fee0c5fce1a721cc
+  zh: 6271b183cea05a44
+/crew-plugins-plan/3-crew-stock-chart:
+  en: ef341042d4b08d3d
+  zh: 2a8bebfa52743634
+/crew-plugins-plan/4-crew-desktop:
+  en: be9b9413e891491c
+  zh: a0c1d59447afccf8
+/crew-plugins-plan/5-crew-today:
+  en: 9aca37ec23ba4ba5
+  zh: db2884cf0c22c909
+/crew-plugins-plan/6-crew-digest:
+  en: 78510fe99ad3dc56
+  zh: 5311648d2e5018fc
+/crew-plugins-plan/stop-and-ask-points-from-the-brief:
+  en: 2f483a0cafe6d2a9
+  zh: 5c989ba82a9c3f9c
+/crew-plugins-plan/open-questions-before-step-1:
+  en: 7138992e67fea5d5
+  zh: 835ab31a0ce0de76
