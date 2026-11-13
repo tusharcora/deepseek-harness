@@ -7,16 +7,20 @@ import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
 import type {} from '@deepseek-ai/dsh-api-remotes/client'
+import type { ScheduleId } from '@deepseek-ai/dsh-schedule/client'
 import type {} from '@deepseek-ai/dsh-api-workspace-controller/client'
 import type {} from '@deepseek-ai/dsh-crew-faces/client'
 import type {} from '@deepseek-ai/dsh-crew-connections/remote'
 import type {} from '@deepseek-ai/dsh-crew-improve/remote'
 import type {} from '@deepseek-ai/dsh-crew-roster/remote'
-import type { SessionId } from '@deepseek-ai/dsh-session/types'
+import type {} from '@deepseek-ai/dsh-crew-slack/remote'
 import connectionsRemote from '@deepseek-ai/dsh-crew-connections/remote'
 import improveRemote from '@deepseek-ai/dsh-crew-improve/remote'
 import rosterRemote from '@deepseek-ai/dsh-crew-roster/remote'
-import { CrewRoster } from './crew-roster.ts'
+import slackRemote from '@deepseek-ai/dsh-crew-slack/remote'
+import { CrewRoster, latestWorkspace } from './crew-roster.ts'
+import { memberChats } from '../roster.ts'
+import { RoutinesStore, routineRequest } from './routines.ts'
 import { CrewTab, type CrewTabInjected } from './CrewTab.tsx'
 import { CrewSection, type CrewSectionInjected } from './CrewSection.tsx'
 import { CrewHeader, type CrewHeaderInjected } from './CrewHeader.tsx'
@@ -74,13 +78,29 @@ export async function apply(ctx: Context): Promise<() => Promise<void>> {
   const unmountConnections = await ctx.remote.$mount(connectionsRemote)
   const unmountImprove = await ctx.remote.$mount(improveRemote)
   const unmountRoster = await ctx.remote.$mount(rosterRemote)
-  const unmount = async (): Promise<void> => { await unmountRoster(); await unmountImprove(); await unmountConnections() }
-  const ui = ctx.inject(['remote.crewConnections', 'remote.crewImprove', 'remote.crewRoster', 'remote.credentials'], (inner) => {
+  const unmountSlack = await ctx.remote.$mount(slackRemote)
+  const unmount = async (): Promise<void> => {
+    for (const step of [unmountSlack, unmountRoster, unmountImprove, unmountConnections]) await step()
+  }
+  const ui = ctx.inject(['remote.crewConnections', 'remote.crewImprove', 'remote.crewRoster', 'remote.crewSlack', 'remote.credentials'], (inner) => {
     const remote = inner.remote
+    // Set while core declares `sidebar.sections`. Only the dsh that has it also lets a chat outside any workspace
+    // take input; elsewhere a member's chat opens in the latest workspace instead.
+    // shortcut: the slot stands in for the composer fix; check the dsh version once both ship upstream.
+    let ownChats = false
     const roster = new CrewRoster(inner.sessions.list, inner.uiSession.sessionStatus, inner.workspaces.list, t, {
       openSession: (sessionId) => { inner.uiWorkspace.openSession(sessionId) },
       startInWorkspace: (agentPreset, workspaceId) => { inner.uiWorkspace.startSession(workspaceId, { agentPreset }) },
       createChat: async (agentPreset) => {
+        const workspaceId = ownChats ? undefined : latestWorkspace(inner.workspaces.list.getSnapshot())
+        if (workspaceId !== undefined) {
+          try {
+            return await inner.uiWorkspace.connectWorkspace(workspaceId, { agentPreset })
+          } catch (_error: unknown) {
+            // The workspace notice already reports a refused creation.
+            return undefined
+          }
+        }
         const directory = await settle(() => remote.crewConnections.memberDirectory(agentPreset))
         if (directory === undefined || !directory.ok) return undefined
         try {
@@ -123,38 +143,94 @@ export async function apply(ctx: Context): Promise<() => Promise<void>> {
       reject: id => settle(() => remote.crewImprove.reject(id)),
       forget: id => settle(() => remote.crewImprove.forget(id)),
     })
+    // Optional: a dsh without the schedule service keeps the catalog undefined and the editor hides Routines.
+    // Not in the inject list, so read through `get`, which answers undefined instead of throwing.
+    const schedule = () => inner.get('remote.schedule') as Context['remote']['schedule'] | undefined
+    const routines = new RoutinesStore({
+      catalog: async () => {
+        const service = schedule()
+        return service === undefined ? undefined : await settle(() => service.catalog())
+      },
+      create: async request => await settle(async () => {
+        const service = schedule()
+        if (service === undefined) return { ok: false } as const
+        const result = await service.create(request)
+        return result.ok ? { ok: true, value: true } : result
+      }) === true,
+      remove: async id => await settle(async () => {
+        const service = schedule()
+        if (service === undefined) return { ok: false } as const
+        const result = await service.edit({ id: id as ScheduleId, action: 'delete' })
+        return result.ok ? { ok: true, value: true } : result
+      }) === true,
+    })
+    void routines.refresh()
+    inner.effect(() => remote.$on('schedule/changed', () => { void routines.refresh() }), 'crew-agents-ui: routines')
     const Face = inner.crewFaces.Face
     inner.slots.inject('sidebar.right.pane.tab', () => inner.slots.register({
       name: 'sidebar.right.pane.tab', key: CREW_TAB_ID, locale: 'crew',
       inject: (): CrewTabInjected => ({
         hooks: {
           members: roster.members, roster: roster.roster, editRequest: roster.editRequest,
-          connections: store.source, learning: learning.source,
+          connections: store.source, learning: learning.source, routines: routines.source,
         },
         Face, clearEditRequest: () => { roster.requestEdit(undefined) },
-        openChat: id => roster.openChat(id), saveMember: member => roster.save(member), removeMember: id => roster.remove(id),
+        openChat: id => roster.openHome(id), saveMember: member => roster.save(member), removeMember: id => roster.remove(id),
+        addRoutine: async (id, draft) => {
+          const home = await roster.homeFor(id)
+          if (home === undefined) return t('routine.noChat')
+          return await routines.add(routineRequest(draft, home, Intl.DateTimeFormat().resolvedOptions().timeZone))
+            ? undefined : t('routine.saveFailed')
+        },
+        removeRoutine: async id => await routines.remove(id) ? undefined : t('routine.deleteFailed'),
         nameOf: id => roster.name(id),
+        slackStatus: () => settle(() => remote.crewSlack.status()),
+        slackReconnect: async () => { await settle(() => remote.crewSlack.reconnect()) },
+        slackDecide: async (id, action, text) => {
+          const result = await settle(() => remote.crewSlack.decide(id, action, text))
+          return result === undefined ? t('edit.unreachable') : result.ok ? undefined : result.message
+        },
         refreshLearning: () => learning.refresh(), decide: (decision, id) => learning.decide(decision, id),
         refresh: () => store.refresh(), save: (ref, value) => store.save(ref, value), remove: ref => store.remove(ref),
         connectGoogle: () => store.connectGoogle(), disconnectGoogle: () => store.disconnectGoogle(),
         openUrl: (url) => { window.open(url, '_blank', 'noopener') },
       }),
     }, CrewTab))
-    inner.slots.inject('sidebar.sections', () => inner.slots.register({
-      name: 'sidebar.sections', id: 'crew', order: 10, locale: 'crew',
-      inject: (): CrewSectionInjected => ({
-        hooks: { members: roster.members, workspaces: inner.workspaces.list }, Face,
-        openChat: id => roster.openChat(id), startInWorkspace: (id, workspaceId) => { roster.startInWorkspace(id, workspaceId) },
-        edit: (id) => {
-          roster.requestEdit(id)
-          // Optional: without the right panel the request waits until the Crew tab opens.
-          inner.get('sidebarRight')?.openTab('crew')
-        },
-      }),
-    }, CrewSection))
+    inner.slots.inject('sidebar.sections', () => {
+      ownChats = true
+      const off = inner.slots.register({
+        name: 'sidebar.sections', id: 'crew', order: 10, locale: 'crew',
+        inject: (): CrewSectionInjected => ({
+          hooks: { members: roster.members, workspaces: inner.workspaces.list }, Face,
+          openChat: id => roster.openChat(id), startInWorkspace: (id, workspaceId) => { roster.startInWorkspace(id, workspaceId) },
+          edit: (id) => {
+            roster.requestEdit(id)
+            // Optional: without the right panel the request waits until the Crew tab opens.
+            inner.get('sidebarRight')?.openTab('crew')
+          },
+        }),
+      }, CrewSection)
+      return () => { ownChats = false; off() }
+    })
+    // Member chats live in the Crew tab, not the sidebar's Ungrouped bucket. Stock dsh has no hideUngrouped.
+    if (typeof inner.uiWorkspace.hideUngrouped === 'function') {
+      inner.effect(() => {
+        let release = (): void => {}
+        const publish = (): void => {
+          const inWorkspace = new Set(inner.workspaces.list.getSnapshot().items.flatMap(item => item.sessionIds))
+          const members = new Set(roster.members.getSnapshot().map(member => member.id))
+          const next = inner.uiWorkspace.hideUngrouped('crew', memberChats(inner.sessions.list.getSnapshot(), inWorkspace, members))
+          release()
+          release = next
+        }
+        const off = [inner.sessions.list, inner.workspaces.list, roster.members].map(source => source.subscribe(publish))
+        publish()
+        return () => { for (const stop of off) stop(); release() }
+      }, 'crew-agents-ui: hide member chats')
+    }
     inner.slots.inject('conversation.session.header.actions', () => inner.slots.register({
       name: 'conversation.session.header.actions', id: 'crew-member', order: -20, locale: 'crew',
-      inject: (sessionId: SessionId): CrewHeaderInjected => ({ hooks: { members: roster.members }, Face, sessionId }),
+      inject: (): CrewHeaderInjected => ({ hooks: { members: roster.members }, Face }),
     }, CrewHeader))
   })
   try { await ui } catch (error: unknown) { await ui.dispose(); await unmount(); throw error }

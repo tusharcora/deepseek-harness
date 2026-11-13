@@ -143,6 +143,16 @@ export interface UiWorkspace {
    * @returns idempotent disposer owned by the caller's Cordis fiber.
    */
   whenAccess(workspaceId: WorkspaceId, action: RemoteEndpoint, callback: () => AccessEffect): () => void
+  /**
+   * Keep Sessions out of the sidebar's Ungrouped bucket, such as chats a plugin lists on a surface of its own, even
+   * while one is open in the main view.
+   * @param owner - the caller's key; a later call with the same key replaces its set.
+   * @param sessionIds - Sessions to hide.
+   * @returns disposer that shows them again.
+   */
+  hideUngrouped(owner: string, sessionIds: readonly SessionId[]): () => void
+  /** Every owner's hidden Sessions together, for the sidebar. */
+  readonly hiddenUngrouped: { getSnapshot(): ReadonlySet<SessionId>; subscribe(listener: () => void): () => void }
 }
 
 declare module '@deepseek-ai/cordis' {
@@ -175,6 +185,9 @@ class UiWorkspaceService extends Service implements UiWorkspace {
   )
   private mainReference: SessionReference | undefined
   private restorationNavigation: AbortSignal | undefined
+  private readonly hiddenByOwner = new Map<string, readonly SessionId[]>()
+  private readonly hidden = createSnapshotStore<ReadonlySet<SessionId>>(new Set())
+  readonly hiddenUngrouped = this.hidden
 
   /**
    * @param ctx - Client root Context.
@@ -418,6 +431,24 @@ class UiWorkspaceService extends Service implements UiWorkspace {
     const result = await this.directoryPicker.createDirectory(path, name)
     if (!result.ok) throw new DirectoryBrowseError(result.error)
     return result.value
+  }
+
+  hideUngrouped(owner: string, sessionIds: readonly SessionId[]): () => void {
+    const ids = [...sessionIds]
+    this.hiddenByOwner.set(owner, ids)
+    this.publishHidden()
+    return () => {
+      if (this.hiddenByOwner.get(owner) !== ids) return
+      this.hiddenByOwner.delete(owner)
+      this.publishHidden()
+    }
+  }
+
+  private publishHidden(): void {
+    const next = new Set([...this.hiddenByOwner.values()].flat())
+    const current = this.hidden.getSnapshot()
+    if (next.size === current.size && [...next].every(id => current.has(id))) return
+    this.hidden.set(next)
   }
 
   whenAccess(workspaceId: WorkspaceId, action: RemoteEndpoint, callback: () => AccessEffect): () => void {

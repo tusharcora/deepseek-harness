@@ -30,6 +30,7 @@ export const EXPERIMENTAL_PACKAGE_NAME_EXCEPTIONS: Readonly<Record<string, strin
   'packages/experimental/crew-agents-ui': '@deepseek-ai/dsh-crew-agents-ui',
   'packages/experimental/crew-connections': '@deepseek-ai/dsh-crew-connections',
   'packages/experimental/crew-improve': '@deepseek-ai/dsh-crew-improve',
+  'packages/experimental/crew-slack': '@deepseek-ai/dsh-crew-slack',
   'packages/experimental/crew-stock-chart': '@deepseek-ai/dsh-crew-stock-chart',
   'packages/experimental/crew-stock-chart-ui': '@deepseek-ai/dsh-crew-stock-chart-ui',
   'packages/experimental/crew-desktop': '@deepseek-ai/dsh-crew-desktop',

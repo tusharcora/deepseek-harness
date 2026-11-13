@@ -8,6 +8,9 @@ import type { CrewMemberId, CrewMemberState } from '../roster.ts'
 import type { RosterView } from './crew-roster.ts'
 import { MemberEditor, newMember } from './MemberEditor.tsx'
 import { MemberFace } from './MemberFace.tsx'
+import { availableTemplates, fromTemplate } from './gallery.ts'
+import { routinesIn, type RoutineDraft } from './routines.ts'
+import type { ScheduleCatalogEntry } from '@deepseek-ai/dsh-schedule/client'
 import type {} from './index.ts'
 import css from './CrewPanel.module.css'
 
@@ -18,6 +21,8 @@ export interface CrewPanelInjected {
     roster: HostObservable<RosterView>
     /** A member another surface asked to edit; `''` asks for a new member. */
     editRequest: HostObservable<CrewMemberId | undefined>
+    /** The Host's schedule catalog; undefined while unreachable, which hides Routines. */
+    routines: HostObservable<readonly ScheduleCatalogEntry[] | undefined>
   }
   /** Mark the edit request handled. */
   clearEditRequest: () => void
@@ -33,6 +38,10 @@ export interface CrewPanelInjected {
   saveMember: (member: CrewMember) => Promise<{ readonly saved: CrewMember } | { readonly message: string }>
   /** Remove a member; resolves undefined once removed, or the message to show. */
   removeMember: (id: CrewMemberId) => Promise<string | undefined>
+  /** Add a routine to a member; resolves undefined once added, or the message to show. */
+  addRoutine: (id: CrewMemberId, draft: RoutineDraft) => Promise<string | undefined>
+  /** Delete a routine; resolves undefined once deleted, or the message to show. */
+  removeRoutine: (id: string) => Promise<string | undefined>
 }
 
 /**
@@ -41,7 +50,11 @@ export interface CrewPanelInjected {
  * @returns the panel body.
  */
 export function CrewPanel(props: InjectFace<CrewPanelInjected> & PropsLocale<'crew'>) {
-  const { useMembers, useRoster, useEditRequest, clearEditRequest, openChat, saveMember, removeMember, Face, t } = props
+  const {
+    useMembers, useRoster, useEditRequest, useRoutines, clearEditRequest, openChat, saveMember, removeMember, addRoutine, removeRoutine,
+    Face, t,
+  } = props
+  const catalog = useRoutines(value => value)
   const members = useMembers(value => value)
   const roster = useRoster(value => value)
   const request = useEditRequest(value => value)
@@ -51,42 +64,68 @@ export function CrewPanel(props: InjectFace<CrewPanelInjected> & PropsLocale<'cr
     setEditing(request === '' ? newMember(roster.records) : roster.records.find(record => record.id === request))
     clearEditRequest()
   }, [request, roster, clearEditRequest])
+  const gallery = availableTemplates(roster.records)
   if (editing !== undefined) {
     return (
       <MemberEditor key={editing.id} initial={editing} title={members.find(member => member.id === editing.id)?.name ?? editing.name}
         connections={roster.connections} Face={Face} save={saveMember} remove={removeMember} t={t}
+        {...editing.id === '' || catalog === undefined ? {} : {
+          routines: routinesIn(catalog, new Set(members.find(member => member.id === editing.id)?.sessions ?? [])),
+          addRoutine: (draft: RoutineDraft) => addRoutine(editing.id, draft), removeRoutine,
+        }}
         close={() => { setEditing(undefined) }} />
     )
   }
   return (
-    <section aria-label={t('panel.list')}>
-      {roster.failed && <p className={css.hint} role="alert">{t('edit.unreachable')}</p>}
-      <ul className={css.list}>
-        {members.map((member) => {
-          const record = roster.records.find(entry => entry.id === member.id)
-          return (
-            <li key={member.id} className={css.row} data-status={member.status}>
-              <MemberFace Face={Face} member={member} size={36} label={member.name} />
-              <div className={css.text}>
-                <span className={css.name}>{member.name}</span>
-                <span className={css.meta}>
-                  <span className={css.chip} data-status={member.status}>{t(`status.${member.status}`)}</span>
-                  {member.sessions.length > 0 && <span>{t('panel.sessions', { count: String(member.sessions.length) })}</span>}
-                  {record?.createdBy !== undefined && <span>{t('panel.addedBy', {
-                    name: members.find(entry => entry.id === record.createdBy)?.name ?? t('panel.anAgent'),
-                  })}</span>}
-                </span>
-              </div>
-              {record !== undefined && <Button variant="ghost" size="sm" aria-label={t('edit.editLabel', { name: member.name })}
-                onClick={() => { setEditing(record) }}>{t('edit.edit')}</Button>}
-              <Button variant="outline" size="sm" aria-label={t('panel.startLabel', { name: member.name })} onClick={() => { void openChat(member.id) }}>
-                {t('panel.start')}
-              </Button>
-            </li>
-          )
-        })}
-      </ul>
-      {roster.loaded && <Button variant="outline" size="sm" onClick={() => { setEditing(newMember(roster.records)) }}>{t('edit.addTitle')}</Button>}
-    </section>
+    <>
+      <section aria-label={t('panel.list')}>
+        {roster.failed && <p className={css.hint} role="alert">{t('edit.unreachable')}</p>}
+        <ul className={css.list}>
+          {members.map((member) => {
+            const record = roster.records.find(entry => entry.id === member.id)
+            return (
+              <li key={member.id} className={css.row} data-status={member.status}>
+                <MemberFace Face={Face} member={member} size={36} label={member.name} />
+                <div className={css.text}>
+                  <span className={css.name}>{member.name}</span>
+                  <span className={css.meta}>
+                    <span className={css.chip} data-status={member.status}>{t(`status.${member.status}`)}</span>
+                    {member.sessions.length > 0 && <span>{t('panel.sessions', { count: String(member.sessions.length) })}</span>}
+                    {record?.createdBy !== undefined && <span>{t('panel.addedBy', {
+                      name: members.find(entry => entry.id === record.createdBy)?.name ?? t('panel.anAgent'),
+                    })}</span>}
+                  </span>
+                </div>
+                {record !== undefined && <Button variant="ghost" size="sm" aria-label={t('edit.editLabel', { name: member.name })}
+                  onClick={() => { setEditing(record) }}>{t('edit.edit')}</Button>}
+                <Button variant="outline" size="sm" aria-label={t('panel.startLabel', { name: member.name })} onClick={() => { void openChat(member.id) }}>
+                  {t('panel.start')}
+                </Button>
+              </li>
+            )
+          })}
+        </ul>
+        {roster.loaded && <Button variant="outline" size="sm" onClick={() => { setEditing(newMember(roster.records)) }}>{t('edit.addTitle')}</Button>}
+      </section>
+      {roster.loaded && gallery.length > 0 && (
+        <section className={css.gallery} aria-label={t('gallery.title')}>
+          <h3 className={css.galleryTitle}>{t('gallery.title')}</h3>
+          <p className={css.hint}>{t('gallery.hint')}</p>
+          <ul className={css.list}>
+            {gallery.map(template => (
+              <li key={template.key} className={css.row}>
+                <Face agentId={`crew-gallery-${template.key}`} design={{ body: template.body, color: '#C9CDD6' }} size={36} />
+                <div className={css.text}>
+                  <span className={css.name}>{t(`gallery.${template.key}.name`)}</span>
+                  <span className={css.meta}>{t(`gallery.${template.key}.description`)}</span>
+                </div>
+                <Button variant="outline" size="sm" aria-label={t('gallery.addLabel', { name: t(`gallery.${template.key}.name`) })}
+                  onClick={() => { setEditing(fromTemplate(template, roster.records)) }}>{t('gallery.add')}</Button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </>
   )
 }

@@ -35,14 +35,23 @@ it('keeps the browser column rules in step with the Host', () => {
 })
 
 describe('board', () => {
-  it('says how to turn Teams on when the Session has no board', () => {
-    render(<KanbanBoard team={undefined} move={vi.fn()} t={t} />)
+  it('says how to turn Teams on when they are off', () => {
+    render(<KanbanBoard team={{ ...team, enabled: false }} move={vi.fn()} t={t} />)
     expect(screen.getByText(/Turn on Use Agent Teams/)).toBeTruthy()
+  })
+
+  it('says agent teams are missing when this dsh has none', () => {
+    render(<KanbanBoard team={undefined} move={vi.fn()} t={t} />)
+    expect(screen.getByText(/doesn’t include/)).toBeTruthy()
+    expect(screen.queryByText(/Turn on Use Agent Teams/)).toBeNull()
   })
 
   it('places each task in its column and leaves deleted ones out', () => {
     render(<KanbanBoard team={team} move={vi.fn()} t={t} />)
     const column = (name: string) => screen.getByRole('region', { name: new RegExp(`^${name}, `) })
+    expect(screen.getByText('4 tasks · 1 done · 1 blocked')).toBeTruthy()
+    expect(within(column('Done')).queryByText('Task 4')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: /^Done 1/ }))
     expect(within(column('Blocked')).getByText('Task 1')).toBeTruthy()
     expect(within(column('Blocked')).getByText('Waiting on #2')).toBeTruthy()
     expect(within(column('To do')).getByText('src/app.ts')).toBeTruthy()
@@ -67,6 +76,7 @@ describe('board', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Open task #1: Task 1' }))
     expect(screen.queryByRole('button', { name: /^Move to/ })).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Close task details' }))
+    fireEvent.click(screen.getByRole('button', { name: /^Done 1/ }))
     fireEvent.click(screen.getByRole('button', { name: 'Open task #4: Task 4' }))
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Move to To do' })) })
     expect(screen.getByRole('status').textContent).toBe('Couldn’t move #4: team task "4" changed')

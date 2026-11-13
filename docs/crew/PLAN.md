@@ -1,5 +1,7 @@
 # Crew plugins: plan
 
+English | [中文](PLAN.zh.md)
+
 Status: draft, waiting for approval. Nothing is built yet.
 
 ## Shared conventions

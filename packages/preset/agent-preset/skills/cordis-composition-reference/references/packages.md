@@ -196,6 +196,25 @@ Every package below exports a Cordis plugin that a bundle patch can name in a Lo
 | `@deepseek-ai/dsh-client-ui-creation-recommendations` | no | Body of the personalized page card: location choice, creation progress, Undo and Restore |
 | `@deepseek-ai/dsh-client-ui-plugin-recommendations` | no | Official plugin card body with catalog text and enabling |
 | `@deepseek-ai/dsh-creation-recommendations` | no | Create persistent removable interface plugins from explicit conversation needs |
+| `@deepseek-ai/dsh-crew-agents-ui` | no | Browser roster of the crew agents: names, live status and Session start for other crew plugins |
+| `@deepseek-ai/dsh-crew-chain-of-thought` | no | Chain-of-thought card in the chat: each Turn's reasoning, tool calls, timings and sources as they happen |
+| `@deepseek-ai/dsh-crew-connections` | yes | Crew account connections: Google sign-in for the Gmail and Calendar MCP servers, token refresh, and the write guard for crew presets |
+| `@deepseek-ai/dsh-crew-desktop` | no | Crew desktop: where computer use runs, for the right-panel Desktop tab that shows the latest screenshot with Pause and Take over |
+| `@deepseek-ai/dsh-crew-desktop-ui` | no | Browser half of crew desktop: the right-panel Desktop tab with the latest screenshot, Pause and Take over |
+| `@deepseek-ai/dsh-crew-faces` | no | SVG faces for crew agents, derived deterministically from the agent id |
+| `@deepseek-ai/dsh-crew-handoff-ui` | no | Handoffs tab: agent cards with live state and lanes of the tasks a Session handed to each subagent |
+| `@deepseek-ai/dsh-crew-improve` | yes | Crew learning: reflects on crew conversations and the user's ratings, proposes lessons for approval, and adds approved lessons to each member's system prompt |
+| `@deepseek-ai/dsh-crew-kanban` | no | Crew kanban, Host half: moves Team tasks between board columns as the Team Lead |
+| `@deepseek-ai/dsh-crew-kanban-ui` | no | Board tab for a Session's Team tasks: four columns with cards you drag or move, shared with other crew pages |
+| `@deepseek-ai/dsh-crew-roster` | yes | Crew roster: crew members stored on disk and registered as agent presets, with a Remote to add, edit and remove them |
+| `@deepseek-ai/dsh-crew-slack` | yes | Crew Slack: mention the crew in Slack and each member answers in its own dsh Session; every reply waits for your approval before it is posted |
+| `@deepseek-ai/dsh-crew-stock-chart` | yes | Stock chart tool and quote Remote over the Yahoo Finance chart endpoint, with an interactive transcript card |
+| `@deepseek-ai/dsh-crew-stock-chart-ui` | no | Browser half of the stock chart: the interactive card beneath answers and the tool row |
+| `@deepseek-ai/dsh-crew-today` | no | Crew today, Host half: this week's Google Calendar events and your open GitHub pull requests for the Today page |
+| `@deepseek-ai/dsh-crew-today-ui` | no | Browser half of crew today: the Today page with crew status, digest, approvals, a stock card, the week's calendar and open pull requests |
+| `@deepseek-ai/dsh-crew-tool-map-ui` | no | Tools tab: each agent's tool access, call counts and last-call time, with a read-only inspector for every call |
+| `@deepseek-ai/dsh-crew-workflows` | yes | Crew workflows: saved agentic and fixed workflows, the runner that executes them under a lead Session, and a draft tool for agents |
+| `@deepseek-ai/dsh-crew-workflows-ui` | no | Workflows page below Automations: build agentic and fixed workflows, run them, and follow each run step by step |
 | `@deepseek-ai/dsh-cua` | no | Shared Computer Use application objects, authorization, and logged tool execution |
 | `@deepseek-ai/dsh-experimental-api-speech-to-text` | yes | Authenticated experimental speech transcription for browser clients |
 | `@deepseek-ai/dsh-experimental-auto-review` | no | Per-tool LLM authorization review for the DeepSeek Harness Auto permission preset |
