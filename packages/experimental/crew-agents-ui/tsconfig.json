@@ -73,6 +73,9 @@
     },
     {
       "path": "../../schedule/schedule"
+    },
+    {
+      "path": "../../goal/goal"
     }
   ]
 }

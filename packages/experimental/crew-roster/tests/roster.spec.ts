@@ -106,6 +106,16 @@ describe('presetFor', () => {
     expect(gmail(false)?.disabled).toBe(true)
   })
 
+  it('gives only the lead the goal tool and errand instructions', () => {
+    const chief = DEFAULT_MEMBERS.find(member => member.lead === true)!
+    const names = (member: CrewMember) => presetFor(member, DEFAULT_MEMBERS).plugins.map(row => row.name)
+    const prefix = (member: CrewMember) => String((presetFor(member, DEFAULT_MEMBERS).plugins[0]?.config as Record<string, unknown>)['prefix'])
+    expect(names(chief)).toContain('@deepseek-ai/dsh-tool-goal')
+    expect(prefix(chief)).toContain('Errands: when this chat has a goal')
+    expect(names(helper)).not.toContain('@deepseek-ai/dsh-tool-goal')
+    expect(prefix(helper)).not.toContain('Errands:')
+  })
+
   it('gives a lone member no delegation tool', () => {
     expect(presetFor(helper, [helper]).plugins.map(row => row.name)).not.toContain('@deepseek-ai/dsh-tool-subagent')
   })

@@ -122,6 +122,12 @@ export const WORKSPACE_GUIDANCE = '\nYour chat starts in your own folder. To wor
   + 'crew_workspaces, then read files there by path or enter one with working_directory. Changes outside your own folder '
   + 'ask the user first.'
 
+/** Added to the lead: how to run an errand, a chat with a goal that continues on its own until done or blocked. */
+export const ERRAND_GUIDANCE = '\nErrands: when this chat has a goal, work toward it without waiting for the user. Plan the steps, hand them '
+  + `to teammates with ${ASK_TOOL}, and keep going round after round. Get the user's approval before anything irreversible, `
+  + 'and ask with ask_user when you need a decision. When the goal is met, complete it with a short summary of what was done '
+  + 'and what is left for the user. If you cannot go on without the user, block it and say exactly what you need.'
+
 /** Added to the lead: ask several teammates the same hard question at once and combine their answers. */
 export const HEAVY_GUIDANCE = `\nHeavy mode: for a hard, open-ended or high-stakes question, or whenever the user says "heavy", call ${ASK_TOOL} `
   + 'several times in the same step, giving the same question to the two to four teammates best suited to it; those calls '
@@ -157,6 +163,7 @@ export function presetFor(
   const local = files !== 'none' || shell
   const guidance = [
     web ? LIVE_GUIDANCE : '', local ? WORKSPACE_GUIDANCE : '', member.lead === true && others.length > 1 ? HEAVY_GUIDANCE : '',
+    member.lead === true ? ERRAND_GUIDANCE : '',
   ].join('')
   const plugins: PluginRow[] = [
     row('persona', '@deepseek-ai/dsh-persona', { prefix: `${member.persona.trim()}${character(member)}${guidance}${roster}\n` }),
@@ -189,6 +196,8 @@ export function presetFor(
     row('tool-skill', '@deepseek-ai/dsh-tool-skill'),
     row('tool-ask-user', '@deepseek-ai/dsh-tool-ask-user'),
     row('tool-todo', '@deepseek-ai/dsh-tool-todo', { allowParallelInProgress: true }),
+    // The lead runs errands: the goal tool lets it complete or block the goal its chat was given.
+    ...member.lead === true ? [row('tool-goal', '@deepseek-ai/dsh-tool-goal')] : [],
     ...others.length > 0 ? [
       row('tool-subagent-control', '@deepseek-ai/dsh-tool-subagent-control'),
       row('ask-crew', '@deepseek-ai/dsh-tool-subagent', {
