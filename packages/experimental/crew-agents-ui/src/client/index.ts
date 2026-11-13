@@ -7,6 +7,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
 import type {} from '@deepseek-ai/dsh-api-remotes/client'
+import type { ScheduleId } from '@deepseek-ai/dsh-schedule/client'
 import type {} from '@deepseek-ai/dsh-api-workspace-controller/client'
 import type {} from '@deepseek-ai/dsh-crew-faces/client'
 import type {} from '@deepseek-ai/dsh-crew-connections/remote'
@@ -19,6 +20,7 @@ import rosterRemote from '@deepseek-ai/dsh-crew-roster/remote'
 import slackRemote from '@deepseek-ai/dsh-crew-slack/remote'
 import { CrewRoster, latestWorkspace } from './crew-roster.ts'
 import { memberChats } from '../roster.ts'
+import { RoutinesStore, routineRequest } from './routines.ts'
 import { CrewTab, type CrewTabInjected } from './CrewTab.tsx'
 import { CrewSection, type CrewSectionInjected } from './CrewSection.tsx'
 import { CrewHeader, type CrewHeaderInjected } from './CrewHeader.tsx'
@@ -141,16 +143,46 @@ export async function apply(ctx: Context): Promise<() => Promise<void>> {
       reject: id => settle(() => remote.crewImprove.reject(id)),
       forget: id => settle(() => remote.crewImprove.forget(id)),
     })
+    // Optional: a dsh without the schedule service keeps the catalog undefined and the editor hides Routines.
+    // Not in the inject list, so read through `get`, which answers undefined instead of throwing.
+    const schedule = () => inner.get('remote.schedule') as Context['remote']['schedule'] | undefined
+    const routines = new RoutinesStore({
+      catalog: async () => {
+        const service = schedule()
+        return service === undefined ? undefined : await settle(() => service.catalog())
+      },
+      create: async request => await settle(async () => {
+        const service = schedule()
+        if (service === undefined) return { ok: false } as const
+        const result = await service.create(request)
+        return result.ok ? { ok: true, value: true } : result
+      }) === true,
+      remove: async id => await settle(async () => {
+        const service = schedule()
+        if (service === undefined) return { ok: false } as const
+        const result = await service.edit({ id: id as ScheduleId, action: 'delete' })
+        return result.ok ? { ok: true, value: true } : result
+      }) === true,
+    })
+    void routines.refresh()
+    inner.effect(() => remote.$on('schedule/changed', () => { void routines.refresh() }), 'crew-agents-ui: routines')
     const Face = inner.crewFaces.Face
     inner.slots.inject('sidebar.right.pane.tab', () => inner.slots.register({
       name: 'sidebar.right.pane.tab', key: CREW_TAB_ID, locale: 'crew',
       inject: (): CrewTabInjected => ({
         hooks: {
           members: roster.members, roster: roster.roster, editRequest: roster.editRequest,
-          connections: store.source, learning: learning.source,
+          connections: store.source, learning: learning.source, routines: routines.source,
         },
         Face, clearEditRequest: () => { roster.requestEdit(undefined) },
         openChat: id => roster.openHome(id), saveMember: member => roster.save(member), removeMember: id => roster.remove(id),
+        addRoutine: async (id, draft) => {
+          const home = await roster.homeFor(id)
+          if (home === undefined) return t('routine.noChat')
+          return await routines.add(routineRequest(draft, home, Intl.DateTimeFormat().resolvedOptions().timeZone))
+            ? undefined : t('routine.saveFailed')
+        },
+        removeRoutine: async id => await routines.remove(id) ? undefined : t('routine.deleteFailed'),
         nameOf: id => roster.name(id),
         slackStatus: () => settle(() => remote.crewSlack.status()),
         slackReconnect: async () => { await settle(() => remote.crewSlack.reconnect()) },

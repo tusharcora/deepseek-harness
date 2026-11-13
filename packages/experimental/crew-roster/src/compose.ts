@@ -1,7 +1,7 @@
 /** Check member records and turn each into the agent preset it runs as. */
 import type { PresetDefinition } from '@deepseek-ai/dsh-agent-preset-registry'
 import { CONNECTIONS, type PluginRow } from './defaults.ts'
-import type { CrewMember, FileAccess, MemberAbilities, MemberBody } from './types.ts'
+import type { CrewMember, FileAccess, MemberAbilities, MemberBody, MemberTone } from './types.ts'
 
 /** Member ids: `crew-` and lowercase letters, the form crew-improve, crew-connections and crew-workflows accept. */
 export const MEMBER_ID = /^crew-[a-z]+$/
@@ -29,6 +29,16 @@ export const MAX_MEMBERS = 16
 const BODIES: readonly MemberBody[] = ['orb', 'block', 'drop', 'bean']
 const COLOR = /^#[0-9a-fA-F]{6}$/
 const MAX_PERSONA = 8000
+/** Longest backstory, in characters. */
+export const MAX_BACKSTORY = 600
+
+/** What each tone adds to a member's instructions. */
+export const TONE_GUIDANCE: Readonly<Record<MemberTone, string>> = {
+  plain: '',
+  direct: '\nTone: direct. Lead with the answer, skip pleasantries and hedging, and say plainly when something is a bad idea.',
+  witty: '\nTone: witty. Be warm and quick, with dry humour and an opinion when you have one, but never at the cost of '
+    + 'accuracy or a clear answer. Keep jokes out of anything sent under the user\'s name.',
+}
 
 /**
  * A new member's id from its name: `crew-` and the name's ASCII letters, or `fallback` when it has none.
@@ -60,6 +70,8 @@ export function memberProblems(member: CrewMember): readonly string[] {
   if (budget !== undefined && (!Number.isInteger(budget) || budget < 0 || budget > MAX_TOOL_CALLS)) {
     problems.push(`Set a tool-call budget from 0 (no limit) to ${String(MAX_TOOL_CALLS)}.`)
   }
+  if (member.tone !== undefined && !(member.tone in TONE_GUIDANCE)) problems.push('Choose a tone: plain, direct or witty.')
+  if ((member.backstory?.length ?? 0) > MAX_BACKSTORY) problems.push(`Keep the backstory to ${String(MAX_BACKSTORY)} characters.`)
   const unknown = member.connections.filter(id => !CONNECTIONS.some(entry => entry.id === id))
   if (unknown.length > 0) problems.push(`Unknown connections: ${unknown.join(', ')}.`)
   return problems
@@ -115,6 +127,12 @@ export const HEAVY_GUIDANCE = `\nHeavy mode: for a hard, open-ended or high-stak
   + 'several times in the same step, giving the same question to the two to four teammates best suited to it; those calls '
   + 'run in parallel. Then compare the answers, say where they agree and where they differ, and give one combined answer.'
 
+/** The member's backstory and tone, as lines after its instructions. */
+const character = (member: CrewMember): string => {
+  const backstory = member.backstory?.trim() ?? ''
+  return `${backstory === '' ? '' : `\nYour character: ${backstory}`}${TONE_GUIDANCE[member.tone ?? 'plain']}`
+}
+
 const row = (id: string, name: string, config?: Record<string, unknown>, disabled?: boolean): PluginRow =>
   ({ id, name, ...config === undefined ? {} : { config }, ...disabled === undefined ? {} : { disabled } })
 
@@ -124,9 +142,12 @@ const row = (id: string, name: string, config?: Record<string, unknown>, disable
  * @param member - the member.
  * @param crew - the whole roster, read for the teammates.
  * @param platform - Host platform, which picks bash or PowerShell.
+ * @param credentials - whether a credentials provider exists; without one, connections that read the credential store stay off.
  * @returns the preset definition.
  */
-export function presetFor(member: CrewMember, crew: readonly CrewMember[], platform: NodeJS.Platform = process.platform): PresetDefinition {
+export function presetFor(
+  member: CrewMember, crew: readonly CrewMember[], platform: NodeJS.Platform = process.platform, credentials = true,
+): PresetDefinition {
   const others = crew.filter(entry => entry.id !== member.id)
   const roster = others.length > 0
     ? `\nYour teammates. Hand one a self-contained task with ${ASK_TOOL}, passing its id as agent_preset:\n`
@@ -138,7 +159,7 @@ export function presetFor(member: CrewMember, crew: readonly CrewMember[], platf
     web ? LIVE_GUIDANCE : '', local ? WORKSPACE_GUIDANCE : '', member.lead === true && others.length > 1 ? HEAVY_GUIDANCE : '',
   ].join('')
   const plugins: PluginRow[] = [
-    row('persona', '@deepseek-ai/dsh-persona', { prefix: `${member.persona.trim()}${guidance}${roster}\n` }),
+    row('persona', '@deepseek-ai/dsh-persona', { prefix: `${member.persona.trim()}${character(member)}${guidance}${roster}\n` }),
     ...shell ? [row('agent-instructions', '@deepseek-ai/dsh-agent-instructions', { maxBytes: 65536 })] : [],
     row('time-context', '@deepseek-ai/dsh-time-context'),
     row('tool-executor-ptc', '@deepseek-ai/dsh-tool-executor-ptc'),
@@ -147,7 +168,10 @@ export function presetFor(member: CrewMember, crew: readonly CrewMember[], platf
     // A connection whose account is not approved yet keeps its row, switched off.
     ...member.connections.flatMap((id) => {
       const entry = CONNECTIONS.find(candidate => candidate.id === id)
-      return entry === undefined ? [] : [entry.available ? entry.row : { ...entry.row, disabled: true }]
+      // Off without a credentials provider too: the MCP client refuses credential templates then, and the refusal would
+      // stop the member's agent from starting at all.
+      const usable = entry !== undefined && entry.available && (credentials || entry.row.config?.['expandTemplates'] !== true)
+      return entry === undefined ? [] : [usable ? entry.row : { ...entry.row, disabled: true }]
     }),
     ...shell ? [
       row('tool-bash', '@deepseek-ai/dsh-tool-bash', undefined, platform === 'win32'),

@@ -259,3 +259,14 @@ describe('memberChats', () => {
     expect(memberChats(state, new Set(), new Set(['crew-code']))).toEqual([SessionId('uncached')])
   })
 })
+
+describe('homeFor', () => {
+  it('returns the own chat without opening it, creating it only when missing', async () => {
+    const act = actions()
+    const roster = await loaded(new CrewRoster(source(list(row('own', 'crew-code'))), source<SessionStatusSnapshot>(new Map()), source(places()), t, act, host()))
+    expect(await roster.homeFor('crew-code')).toBe(SessionId('own'))
+    expect(await roster.homeFor('crew-mail')).toBe(SessionId('new-chat'))
+    expect(act.createChat).toHaveBeenCalledTimes(1)
+    expect(act.openSession).not.toHaveBeenCalled()
+  })
+})

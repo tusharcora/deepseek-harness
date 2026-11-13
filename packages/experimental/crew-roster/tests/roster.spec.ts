@@ -86,6 +86,26 @@ describe('presetFor', () => {
     expect(workspaceSummary(undefined)).toBe('This dsh keeps no workspace list.')
   })
 
+  it('adds the backstory and tone to the instructions, and checks both', () => {
+    const prefixOf = (member: CrewMember) => String((presetFor(member, [member]).plugins[0]?.config as Record<string, unknown>)['prefix'])
+    const witty = { ...helper, tone: 'witty' as const, backstory: 'A retired sea captain who explains everything with sailing.' }
+    expect(prefixOf(witty)).toContain('Your character: A retired sea captain')
+    expect(prefixOf(witty)).toContain('Tone: witty.')
+    expect(prefixOf({ ...helper, tone: 'direct' })).toContain('Tone: direct.')
+    expect(prefixOf(helper)).not.toContain('Tone:')
+    expect(prefixOf({ ...helper, backstory: '  ' })).not.toContain('Your character')
+    expect(memberProblems({ ...helper, tone: 'sarcastic' as never })).toContain('Choose a tone: plain, direct or witty.')
+    expect(memberProblems({ ...helper, backstory: 'x'.repeat(601) })).toContain('Keep the backstory to 600 characters.')
+    expect(memberProblems(witty)).toEqual([])
+  })
+
+  it('switches credential connections off when dsh has no credentials provider', () => {
+    const mail = DEFAULT_MEMBERS.find(member => member.id === 'crew-mail')!
+    const gmail = (credentials: boolean) => presetFor(mail, DEFAULT_MEMBERS, 'darwin', credentials).plugins.find(row => row.id === 'mcp-gmail')
+    expect(gmail(true)?.disabled).toBeUndefined()
+    expect(gmail(false)?.disabled).toBe(true)
+  })
+
   it('gives a lone member no delegation tool', () => {
     expect(presetFor(helper, [helper]).plugins.map(row => row.name)).not.toContain('@deepseek-ai/dsh-tool-subagent')
   })

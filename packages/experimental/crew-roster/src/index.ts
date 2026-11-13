@@ -21,7 +21,10 @@ import { CONNECTIONS, DEFAULT_MEMBERS, FACE_COLORS, SUPERSEDED_PERSONAS } from '
 import type { CrewMember, RosterResult, RosterState } from './types.ts'
 
 export type * from './types.ts'
-export { ASK_TOOL, BUDGET_EXEMPT, budgetRefusal, capAbilities, MAX_TOOL_CALLS, idFor, MAX_DEPTH, MAX_MEMBERS, MEMBER_ID, memberProblems, presetFor } from './compose.ts'
+export {
+  ASK_TOOL, BUDGET_EXEMPT, budgetRefusal, capAbilities, MAX_BACKSTORY, MAX_TOOL_CALLS, idFor, MAX_DEPTH, MAX_MEMBERS, MEMBER_ID,
+  memberProblems, presetFor, TONE_GUIDANCE,
+} from './compose.ts'
 export { CONNECTIONS, DEFAULT_MEMBERS, FACE_COLORS, SUPERSEDED_PERSONAS, type PluginRow } from './defaults.ts'
 
 /** Model-facing tool that adds a crew member. */
@@ -180,7 +183,8 @@ export class CrewRosterService extends TypertRemoteService {
     this.registered.clear()
     for (const member of this.members) {
       try {
-        this.registered.set(member.id, await this.ctx.agentPresets.register(presetFor(member, this.members)))
+        const credentials = this.ctx.get('credentials') !== undefined
+        this.registered.set(member.id, await this.ctx.agentPresets.register(presetFor(member, this.members, process.platform, credentials)))
       } catch (error: unknown) {
         this.ctx.logger.warn(`crew-roster: preset ${member.id} not registered: ${String(error)}`)
       }
