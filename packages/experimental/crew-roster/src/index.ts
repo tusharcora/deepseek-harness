@@ -8,6 +8,7 @@ import { readFile } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 import { Service, type Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
+import { z as zod } from 'zod'
 import { Remote, TypertRemoteService } from '@deepseek-ai/dsh-typert-protocol'
 import { writeFileAtomic } from '@deepseek-ai/dsh-atomic-write'
 import { defineTool } from '@deepseek-ai/dsh-tools'
@@ -15,9 +16,12 @@ import type { Agent } from '@deepseek-ai/dsh-agent'
 import type {} from '@deepseek-ai/dsh-agent-preset-registry'
 import type {} from '@deepseek-ai/dsh-subagent'
 import type { Workspace } from '@deepseek-ai/dsh-workspace'
+import type { ProjectionHandle } from '@deepseek-ai/dsh-session-projection'
+import type {} from '@deepseek-ai/dsh-goal'
 import type { PreToolDecision, ToolExecution } from '@deepseek-ai/dsh-tools'
 import { BUDGET_EXEMPT, budgetRefusal, capAbilities, idFor, MAX_MEMBERS, memberProblems, presetFor } from './compose.ts'
 import { CONNECTIONS, DEFAULT_MEMBERS, FACE_COLORS, SUPERSEDED_PERSONAS } from './defaults.ts'
+import { actionConcerns, appendAsked, ASKED_SOURCES, checkerReason, withConcerns } from './check.ts'
 import type { CrewMember, RosterResult, RosterState } from './types.ts'
 
 export type * from './types.ts'
@@ -26,6 +30,7 @@ export {
   memberProblems, presetFor, TONE_GUIDANCE,
 } from './compose.ts'
 export { CONNECTIONS, DEFAULT_MEMBERS, FACE_COLORS, SUPERSEDED_PERSONAS, type PluginRow } from './defaults.ts'
+export { actionConcerns, appendAsked, ASKED_SOURCES, checkerReason, MAX_ASKED, withConcerns } from './check.ts'
 
 /** Model-facing tool that adds a crew member. */
 export const CREATE_TOOL = 'crew_member_create'
@@ -113,6 +118,8 @@ export class CrewRosterService extends TypertRemoteService {
   private members: readonly CrewMember[] = []
   private writes: Promise<unknown> = Promise.resolve()
   private readonly registered = new Map<string, () => Promise<void>>()
+  /** What each chat was asked, for the action checker; absent without the projection registry. */
+  private asked: ProjectionHandle<string> | undefined
   /** Tool calls made so far in the current turn, by Session id; only Sessions of budgeted members are counted. */
   private readonly calls = new Map<string, number>()
 
@@ -140,7 +147,8 @@ export class CrewRosterService extends TypertRemoteService {
     this.ctx.effect(() => this.ctx.tools.register(this.workspacesTool()), 'crew-roster.workspaces-tool')
     this.ctx.on('session/event', (session, event) => { if (event.type === 'turn/start') this.calls.delete(session.id) })
     this.ctx.on('session/disposed', (session) => { this.calls.delete(session.id) })
-    this.ctx.on('tools/pre-execute', async (exec, next) => this.overBudget(exec) ?? await next())
+    this.registerAsked()
+    this.ctx.on('tools/pre-execute', async (exec, next) => this.overBudget(exec) ?? this.checked(exec, await next()))
   }
 
   private get path(): string {
@@ -276,6 +284,41 @@ export class CrewRosterService extends TypertRemoteService {
     const used = (this.calls.get(exec.agent.session.id) ?? 0) + 1
     this.calls.set(exec.agent.session.id, used)
     return used > limit ? { kind: 'deny', reason: budgetRefusal(member, limit) } : undefined
+  }
+
+  /** Keep, per chat, what it was asked: the user's words and handed-over tasks, never tool output. */
+  private registerAsked(): void {
+    const projections = this.ctx.get('sessionProjections')
+    if (projections === undefined) return
+    const ready = projections.register({
+      key: 'crewAsked',
+      stateVersion: 1,
+      stateSchema: zod.string(),
+      init: () => '',
+      apply: (state, event) => {
+        if (event.type !== 'user/message' || !ASKED_SOURCES.has(event.data.source.kind)) return state
+        const text = event.data.content.flatMap(block => block.type === 'text' ? [block.text] : []).join('\n').trim()
+        return text === '' ? state : appendAsked(state, text)
+      },
+    })
+    void ready.then((handle) => { this.asked = handle }, (error: unknown) => {
+      this.ctx.logger.warn(`crew-roster: action checker has no history: ${String(error)}`)
+    })
+  }
+
+  /**
+   * Add the action checker's concerns to the decision the rest of the pipeline reached. A refusal stands; a call that would
+   * run, or already asks, asks with the concerns first, so the user sees one prompt that says what looks off.
+   */
+  private checked(exec: ToolExecution, decision: PreToolDecision): PreToolDecision {
+    if (decision.kind === 'deny' || decision.kind === 'cancel') return decision
+    const member = this.memberOf(exec.agent)
+    if (member === undefined || exec.agent === undefined) return decision
+    const goal = this.ctx.get('goals')?.get(exec.agent)?.objective ?? ''
+    const asked = `${this.asked?.stateOf(exec.agent.session) ?? ''}\n${goal}`
+    const concerns = actionConcerns(exec.name, exec.arguments, asked)
+    if (concerns.length === 0) return decision
+    return withConcerns(decision, checkerReason(member.name, concerns))
   }
 
   /** The member a Session runs as, when it runs a crew preset. */
