@@ -315,6 +315,27 @@ flowchart LR
   svc_cordisInspect["ctx.cordisInspect<br/>Dynamic Cordis inspect registry"]
   pkg_experimental_liveshare["experimental-liveshare"]
   svc_liveshareShares["ctx.liveshareShares<br/>Owner share management Remote"]
+  pkg_crew_connections["crew-connections"]
+  svc_crewConnections["ctx.crewConnections<br/>Crew account connections"]
+  pkg_crew_desktop["crew-desktop"]
+  svc_crewDesktop["ctx.crewDesktop<br/>Crew computer-use location"]
+  pkg_crew_improve["crew-improve"]
+  svc_crewImprove["ctx.crewImprove<br/>Crew learning"]
+  pkg_crew_kanban["crew-kanban"]
+  svc_crewKanban["ctx.crewKanban<br/>Crew board moves"]
+  pkg_crew_roster["crew-roster"]
+  svc_crewRoster["ctx.crewRoster<br/>Crew roster"]
+  pkg_crew_slack["crew-slack"]
+  svc_crewSlack["ctx.crewSlack<br/>Crew Slack"]
+  pkg_crew_today["crew-today"]
+  svc_crewToday["ctx.crewToday<br/>Today page data"]
+  pkg_crew_today_ui["crew-today-ui"]
+  pkg_crew_workflows["crew-workflows"]
+  svc_crewWorkflows["ctx.crewWorkflows<br/>Crew workflows"]
+  pkg_crew_workflows_ui["crew-workflows-ui"]
+  pkg_crew_stock_chart["crew-stock-chart"]
+  svc_stockCharts["ctx.stockCharts<br/>Stock charts"]
+  pkg_crew_stock_chart_ui["crew-stock-chart-ui"]
   pkg_action_cards --> svc_actionCards
   pkg_agent --> svc_agents
   pkg_agent_default_model --> svc_agentDefaultModel
@@ -356,6 +377,15 @@ flowchart LR
   pkg_cordis_host_runner --> svc_dynamicCordisRunner
   pkg_credentials --> svc_credentials
   pkg_credentials_local --> svc_credentials
+  pkg_crew_connections --> svc_crewConnections
+  pkg_crew_desktop --> svc_crewDesktop
+  pkg_crew_improve --> svc_crewImprove
+  pkg_crew_kanban --> svc_crewKanban
+  pkg_crew_roster --> svc_crewRoster
+  pkg_crew_slack --> svc_crewSlack
+  pkg_crew_stock_chart --> svc_stockCharts
+  pkg_crew_today --> svc_crewToday
+  pkg_crew_workflows --> svc_crewWorkflows
   pkg_cua --> svc_cuaAccess
   pkg_deepseek_account --> svc_deepseekAccount
   pkg_deepseek_account_platform --> svc_deepseekAccount
@@ -514,6 +544,9 @@ flowchart LR
   svc_credentials --> pkg_api_settings_controller
   svc_credentials --> pkg_llm_deepseek
   svc_credentials --> pkg_llm_pi_ai
+  svc_crewRoster --> pkg_crew_slack
+  svc_crewToday --> pkg_crew_today_ui
+  svc_crewWorkflows --> pkg_crew_workflows_ui
   svc_cuaAccess --> pkg_cua
   svc_deepseekAccount --> pkg_api_account_controller
   svc_deepseekAccount --> pkg_llm_deepseek
@@ -592,6 +625,8 @@ flowchart LR
   svc_ssh --> pkg_fs_ssh
   svc_ssh --> pkg_sandbox_ssh
   svc_ssh --> pkg_subprocess_ssh
+  svc_stockCharts --> pkg_crew_stock_chart_ui
+  svc_stockCharts --> pkg_crew_today_ui
   svc_storage --> pkg_storage_domain
   svc_storageDomain --> pkg_workspace
   svc_subagentModelSelection --> pkg_tool_subagent
@@ -758,5 +793,14 @@ flowchart LR
 | `ctx.dynamicCordisRunner` | `core` | [`cordis-host-runner`](../packages/extensions/cordis-host-runner) | - | [`tool-cordis`](../packages/extensions/tool-cordis) | - | Owns the in-memory definition registry, the vm sandbox for host halves, and the request-run round trip; browser pages reach the same service over the wire through its remote namespace. |
 | `ctx.cordisInspect` | `core` | [`cordis-host-runner`](../packages/extensions/cordis-host-runner) | - | [`tool-cordis`](../packages/extensions/tool-cordis) | - | Registers host inspect providers, mirrors the client provider manifest, and routes client queries through the dynamic Cordis transport. |
 | `ctx.liveshareShares` | `service` | [`experimental-liveshare`](../packages/experimental/liveshare) | - | - | - | Publishes the owner share-management operations as one Typert Remote namespace that the owner client face calls; every method delegates to the same operations the same-origin routes used. |
+| `ctx.crewConnections` | `service` | [`crew-connections`](../packages/experimental/crew-connections) | - | - | - | Signs crew members in to Google, refreshes their tokens, and guards crew presets against sending, posting, deleting, merging or booking without an approval card. |
+| `ctx.crewDesktop` | `service` | [`crew-desktop`](../packages/experimental/crew-desktop) | - | - | - | Reports which computer-use provider and host the crew uses, for the Desktop tab. |
+| `ctx.crewImprove` | `service` | [`crew-improve`](../packages/experimental/crew-improve) | - | - | - | Keeps the lessons approved for each member, proposes new ones from ratings and corrections, and reflects on finished crew conversations. |
+| `ctx.crewKanban` | `service` | [`crew-kanban`](../packages/experimental/crew-kanban) | - | - | - | Moves Team tasks between board columns as the Team Lead; the Host validates every move. |
+| `ctx.crewRoster` | `service` | [`crew-roster`](../packages/experimental/crew-roster) | - | [`crew-slack`](../packages/experimental/crew-slack) | - | Stores crew members on disk and registers one agent preset per member. |
+| `ctx.crewSlack` | `service` | [`crew-slack`](../packages/experimental/crew-slack) | - | - | - | Answers Slack mentions in one Session per member and posts each reply only after the user approves it. |
+| `ctx.crewToday` | `service` | [`crew-today`](../packages/experimental/crew-today) | - | [`crew-today-ui`](../packages/experimental/crew-today-ui) | - | Reads the calendar events of the week and open pull requests for the Today page. |
+| `ctx.crewWorkflows` | `service` | [`crew-workflows`](../packages/experimental/crew-workflows) | - | [`crew-workflows-ui`](../packages/experimental/crew-workflows-ui) | - | Stores agentic and fixed workflows and runs them under a lead Session, one step at a time. |
+| `ctx.stockCharts` | `service` | [`crew-stock-chart`](../packages/experimental/crew-stock-chart) | - | [`crew-stock-chart-ui`](../packages/experimental/crew-stock-chart-ui), [`crew-today-ui`](../packages/experimental/crew-today-ui) | - | Serves the stock chart tool and its quote Remote over the Yahoo Finance chart endpoint. |
 
 Maintenance mode: hybrid: services are discovered from Cordis declarations; interface/implementation/consumer roles are classified in `scripts/gen-doc-graphs.ts` with a completeness guard.

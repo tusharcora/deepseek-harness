@@ -99,6 +99,8 @@
       "@deepseek-ai/dsh-crew-tool-map-ui/client": ["./packages/experimental/crew-tool-map-ui/src/client/index.ts"],
       "@deepseek-ai/dsh-crew-roster": ["./packages/experimental/crew-roster/src/index.ts"],
       "@deepseek-ai/dsh-crew-roster/types": ["./packages/experimental/crew-roster/src/types.ts"],
+      "@deepseek-ai/dsh-crew-slack": ["./packages/experimental/crew-slack/src/index.ts"],
+      "@deepseek-ai/dsh-crew-slack/types": ["./packages/experimental/crew-slack/src/types.ts"],
       "@deepseek-ai/dsh-crew-workflows": ["./packages/experimental/crew-workflows/src/index.ts"],
       "@deepseek-ai/dsh-crew-workflows/types": ["./packages/experimental/crew-workflows/src/types.ts"],
       "@deepseek-ai/dsh-crew-workflows-ui": ["./packages/experimental/crew-workflows-ui/src/index.ts"],

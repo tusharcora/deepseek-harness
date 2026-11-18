@@ -1,0 +1,28 @@
+# Bilingual-pair consistency record for 2026-11-06-crew-improve-message-source.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write docs/persistence-changes/2026-11-06-crew-improve-message-source.md
+/:
+  en: 3d5a424ae7d7e46b
+  zh: c22a8e4a62d8cc1a
+/2026-11-06-crew-improve-message-source:
+  en: a5af5db5a38933cd
+  zh: 0b4c1367d8a5d5ff
+/2026-11-06-crew-improve-message-source/summary:
+  en: 54bb139c2ae29109
+  zh: 3b6c0b6c0f5ff0bb
+/2026-11-06-crew-improve-message-source/table-of-contents:
+  en: 6cf314a069ceb451
+  zh: 9adff678e9ecab3b
+/2026-11-06-crew-improve-message-source/declaration:
+  en: 6907136f28e48c90
+  zh: 02f8298485f3d8e7
+/2026-11-06-crew-improve-message-source/compatibility:
+  en: d83fa4ae22ec3cd2
+  zh: 0ec4f23838569801
+/2026-11-06-crew-improve-message-source/verification:
+  en: b2b4e8a3dc62bc72
+  zh: 9431ef7a414dd454
+/2026-11-06-crew-improve-message-source/dev-note:
+  en: b75c8458928b72b9
+  zh: 003ba4e17b4b5269

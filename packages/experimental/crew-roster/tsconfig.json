@@ -34,6 +34,15 @@
     },
     {
       "path": "../../llm/llm"
+    },
+    {
+      "path": "../../workspace/workspace"
+    },
+    {
+      "path": "../../session/session-projection"
+    },
+    {
+      "path": "../../goal/goal"
     }
   ]
 }

@@ -60,6 +60,7 @@ kind: "package-group"
 | [`crew-workflows-ui`](crew-workflows-ui/README.zh.md) | 位于自动化下方的工作流页面 | - |
 | [`crew-improve`](crew-improve/README.zh.md) | Crew 学习：从评分和纠正中提出经验，在 Crew 标签页中批准 | `ctx.crewImprove` |
 | [`crew-roster`](crew-roster/README.zh.md) | 存储在磁盘上并注册为智能体预设的 crew 成员 | `ctx.crewRoster` |
+| [`crew-slack`](crew-slack/README.zh.md) | 在 Slack 中呼叫 crew；回复需你批准 | `ctx.crewSlack` |
 | [`crew-stock-chart`](crew-stock-chart/README.zh.md) | 基于 Yahoo Finance 的股票图表工具及卡片刷新所用的报价 Remote | `ctx.stockCharts` |
 | [`crew-stock-chart-ui`](crew-stock-chart-ui/README.zh.md) | 回答下方的交互式股票图表卡片与工具行 | — |
 | [`tool-session-query`](tool-session-query/README.zh.md) | 按工作区授权的模型会话搜索、追踪与事件读取 | — |

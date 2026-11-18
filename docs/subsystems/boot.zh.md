@@ -316,6 +316,37 @@ Stores the crew and keeps one registered preset per member.
 
 Source: [`packages/experimental/crew-roster/src/index.ts`](../../packages/experimental/crew-roster/src/index.ts)
 
+<a id="ctxcrewslack--crewslack"></a>
+
+### `ctx.crewSlack` — `CrewSlack`
+
+The Slack connection, thread Sessions and reply drafts.
+
+```ts cordis-catalog
+/**
+ * Where the connection stands and the recent drafts.
+ * @returns the status.
+ */
+@Remote('status') status(): Promise<SlackStatus>
+
+/**
+ * Reconnect, for example after the tokens were stored.
+ * @returns the state after the attempt.
+ */
+@Remote('reconnect') async reconnect(): Promise<SlackState>
+
+/**
+ * Post or discard a pending draft. Posting is the only way a crew reply reaches Slack.
+ * @param id - draft id.
+ * @param action - `post` or `discard`.
+ * @param text - edited reply text to post instead of the draft's.
+ * @returns success, or why nothing happened.
+ */
+@Remote('decide') async decide(id: string, action: 'post' | 'discard', text?: string): Promise<SlackResult>
+```
+
+Source: [`packages/experimental/crew-slack/src/index.ts`](../../packages/experimental/crew-slack/src/index.ts)
+
 <a id="ctxcrewtoday--crewtoday"></a>
 
 ### `ctx.crewToday` — `CrewToday`

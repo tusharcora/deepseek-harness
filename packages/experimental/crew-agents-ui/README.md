@@ -58,7 +58,7 @@ Each member's face is part of its record and can be changed in the editor; the t
 
 The section uses the `sidebar.sections` slot and lists every member, idle ones included, with a status chip while it works or needs you. Each member has its own chat: a Session outside any workspace, running in the member's folder that [crew-connections](../crew-connections/README.md) provides, and created the first time it is opened. A row opens the Session waiting on you, else one running, else the member's own chat. The **⋯** menu opens the own chat, starts a new chat with the member in any workspace, or opens **Edit member**; the **+** beside the heading adds a member. Both open the editor in the Crew tab. The collapsed rail shows the faces alone, each still named for assistive technology and in its tooltip.
 
-The badge uses `conversation.session.header.actions` and appears only in Sessions that run a crew preset.
+The badge uses `conversation.session.header.actions`. It shows the member a Session runs, then the faces of the crew members the Session handed work to, read from its subagent catalog: those that need you first, then those working, whose eyes move, then those done, dimmed. More than four collapse into a count. It appears when a Session runs a crew member or has handed work to one.
 
 ### Connections
 
@@ -69,6 +69,10 @@ Below the roster, the Crew tab lists the crew's MCP connections, who uses each a
 Open **Crew** from the right panel's guide in any Session. Each row shows the member's face, name, status in words (Working, Needs you or Idle), its Session count and a **New session** button that starts a Session with that member's preset.
 
 **Edit** on a row and **Add crew member** below the list open the editor: name, what the member does (the Chief of staff reads it when choosing whom to ask), instructions, tool calls per message (0 for no limit), face shape and colour, file access, commands, web pages, scheduled tasks and connections. Connections whose account you have not approved are shown switched off. The Chief of staff can be renamed and re-instructed but not removed, and its tools are fixed. **Remove** asks once more; past chats stay. Saving takes effect for new chats; running chats keep the setup they started with.
+
+### Slack
+
+Below the connections, the **Slack** card stores the Slack app's tokens and your member id for [crew-slack](../crew-slack/README.md), shows whether it is connected, and lists replies waiting for you. Each reply can be edited, then posted with **Post reply** or dropped with **Discard**; the list re-reads every 5 seconds while open.
 
 ### Learning
 

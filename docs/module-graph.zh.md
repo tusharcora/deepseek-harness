@@ -262,6 +262,26 @@ flowchart TD
     pkg_client_ui_creation_recommendations["client-ui-creation-recommendations"]
     pkg_client_ui_plugin_recommendations["client-ui-plugin-recommendations"]
     pkg_creation_recommendations["creation-recommendations"]
+    pkg_crew_agents["crew-agents"]
+    pkg_crew_agents_ui["crew-agents-ui"]
+    pkg_crew_chain_of_thought["crew-chain-of-thought"]
+    pkg_crew_connections["crew-connections"]
+    pkg_crew_desktop["crew-desktop"]
+    pkg_crew_desktop_ui["crew-desktop-ui"]
+    pkg_crew_faces["crew-faces"]
+    pkg_crew_handoff_ui["crew-handoff-ui"]
+    pkg_crew_improve["crew-improve"]
+    pkg_crew_kanban["crew-kanban"]
+    pkg_crew_kanban_ui["crew-kanban-ui"]
+    pkg_crew_roster["crew-roster"]
+    pkg_crew_slack["crew-slack"]
+    pkg_crew_stock_chart["crew-stock-chart"]
+    pkg_crew_stock_chart_ui["crew-stock-chart-ui"]
+    pkg_crew_today["crew-today"]
+    pkg_crew_today_ui["crew-today-ui"]
+    pkg_crew_tool_map_ui["crew-tool-map-ui"]
+    pkg_crew_workflows["crew-workflows"]
+    pkg_crew_workflows_ui["crew-workflows-ui"]
     pkg_cua["cua"]
     pkg_cua_bundle["cua-bundle"]
     pkg_experimental_api_speech_to_text["experimental-api-speech-to-text"]
@@ -527,6 +547,8 @@ flowchart TD
   pkg_hmr --> pkg_app_boot
   pkg_hmr --> pkg_cmdline
   pkg_deliverable_file_references --> pkg_system_prompt
+  pkg_crew_desktop --> pkg_computer_use
+  pkg_crew_desktop --> pkg_typert_protocol
   pkg_experimental_computer_use_cua_driver_mcp --> pkg_computer_use
   pkg_experimental_forge_github --> pkg_experimental_forge
   pkg_experimental_forge_github --> pkg_subprocess
@@ -955,6 +977,12 @@ flowchart TD
   pkg_creation_recommendations --> pkg_session
   pkg_creation_recommendations --> pkg_skill
   pkg_creation_recommendations --> pkg_tools
+  pkg_crew_connections --> pkg_authorization
+  pkg_crew_connections --> pkg_credentials
+  pkg_crew_connections --> pkg_tools
+  pkg_crew_connections --> pkg_typert_protocol
+  pkg_crew_stock_chart --> pkg_tools
+  pkg_crew_stock_chart --> pkg_typert_protocol
   pkg_cua --> pkg_attachment
   pkg_cua --> pkg_ptc_runtime_node
   pkg_cua --> pkg_scope
@@ -1128,6 +1156,16 @@ flowchart TD
   pkg_api_settings_controller --> pkg_settings
   pkg_api_settings_controller --> pkg_typert_protocol
   pkg_web_app --> pkg_shell_env
+  pkg_crew_improve --> pkg_agent_preset_registry
+  pkg_crew_improve --> pkg_llm
+  pkg_crew_improve --> pkg_message_feedback
+  pkg_crew_improve --> pkg_session
+  pkg_crew_improve --> pkg_system_prompt
+  pkg_crew_improve --> pkg_timeout
+  pkg_crew_improve --> pkg_typert_protocol
+  pkg_crew_today --> pkg_credentials
+  pkg_crew_today --> pkg_crew_connections
+  pkg_crew_today --> pkg_typert_protocol
   pkg_experimental_auto_review --> pkg_agent
   pkg_experimental_auto_review --> pkg_agent_instructions
   pkg_experimental_auto_review --> pkg_llm
@@ -1404,6 +1442,12 @@ flowchart TD
   pkg_session_reference --> pkg_subagent
   pkg_session_reference --> pkg_system_prompt
   pkg_session_reference --> pkg_typert_protocol
+  pkg_crew_roster --> pkg_agent
+  pkg_crew_roster --> pkg_agent_preset_registry
+  pkg_crew_roster --> pkg_llm
+  pkg_crew_roster --> pkg_subagent
+  pkg_crew_roster --> pkg_tools
+  pkg_crew_roster --> pkg_typert_protocol
   pkg_experimental_subagent_oar --> pkg_llm
   pkg_experimental_subagent_oar --> pkg_session
   pkg_experimental_subagent_oar --> pkg_subagent
@@ -1445,6 +1489,26 @@ flowchart TD
   pkg_workflow_ptc --> pkg_tools
   pkg_workflow_ptc --> pkg_workflow
   pkg_workflow_ptc --> pkg_working_directory
+  pkg_crew_kanban --> pkg_agent
+  pkg_crew_kanban --> pkg_agent_team
+  pkg_crew_kanban --> pkg_subagent
+  pkg_crew_kanban --> pkg_typert_protocol
+  pkg_crew_slack --> pkg_api_session_controller
+  pkg_crew_slack --> pkg_credentials
+  pkg_crew_slack --> pkg_crew_connections
+  pkg_crew_slack --> pkg_crew_roster
+  pkg_crew_slack --> pkg_session
+  pkg_crew_slack --> pkg_session_title
+  pkg_crew_slack --> pkg_typert_protocol
+  pkg_crew_workflows --> pkg_agent
+  pkg_crew_workflows --> pkg_api_session_controller
+  pkg_crew_workflows --> pkg_llm
+  pkg_crew_workflows --> pkg_session
+  pkg_crew_workflows --> pkg_session_title
+  pkg_crew_workflows --> pkg_subagent
+  pkg_crew_workflows --> pkg_tools
+  pkg_crew_workflows --> pkg_typert_protocol
+  pkg_crew_workflows --> pkg_util_values
   pkg_schedule --> pkg_agent
   pkg_schedule --> pkg_api_session_controller
   pkg_schedule --> pkg_brand
@@ -1625,6 +1689,17 @@ flowchart TD
 | [`client-ui-action-cards`](../packages/experimental/client-ui-action-cards) | `experimental` | — |
 | [`client-ui-creation-recommendations`](../packages/experimental/client-ui-creation-recommendations) | `experimental` | — |
 | [`client-ui-plugin-recommendations`](../packages/experimental/client-ui-plugin-recommendations) | `experimental` | — |
+| [`crew-agents`](../packages/experimental/crew-agents) | `experimental` | — |
+| [`crew-agents-ui`](../packages/experimental/crew-agents-ui) | `experimental` | — |
+| [`crew-chain-of-thought`](../packages/experimental/crew-chain-of-thought) | `experimental` | — |
+| [`crew-desktop-ui`](../packages/experimental/crew-desktop-ui) | `experimental` | — |
+| [`crew-faces`](../packages/experimental/crew-faces) | `experimental` | — |
+| [`crew-handoff-ui`](../packages/experimental/crew-handoff-ui) | `experimental` | — |
+| [`crew-kanban-ui`](../packages/experimental/crew-kanban-ui) | `experimental` | — |
+| [`crew-stock-chart-ui`](../packages/experimental/crew-stock-chart-ui) | `experimental` | — |
+| [`crew-today-ui`](../packages/experimental/crew-today-ui) | `experimental` | — |
+| [`crew-tool-map-ui`](../packages/experimental/crew-tool-map-ui) | `experimental` | — |
+| [`crew-workflows-ui`](../packages/experimental/crew-workflows-ui) | `experimental` | — |
 | [`cua-bundle`](../packages/experimental/cua-bundle) | `experimental` | — |
 | [`experimental-badge-skill-bundle`](../packages/experimental/badge-skill-bundle) | `experimental` | — |
 | [`experimental-client-ui-claude-code-mods`](../packages/experimental/client-ui-claude-code-mods) | `experimental` | — |
@@ -1693,6 +1768,7 @@ flowchart TD
 | [`attachment-local`](../packages/attachment/attachment-local) | `attachment` | [`attachment`](../packages/attachment/attachment), [`home-paths`](../packages/util/home-paths) |
 | [`hmr`](../packages/boot/hmr) | `boot` | [`app-boot`](../packages/boot/app-boot), [`cmdline`](../packages/boot/cmdline) |
 | [`deliverable-file-references`](../packages/deliverables/deliverable-file-references) | `deliverables` | [`system-prompt`](../packages/core/system-prompt) |
+| [`crew-desktop`](../packages/experimental/crew-desktop) | `experimental` | [`computer-use`](../packages/computer-use/computer-use), [`typert-protocol`](../packages/typert/protocol) |
 | [`experimental-computer-use-cua-driver-mcp`](../packages/experimental/computer-use-cua-driver-mcp) | `experimental` | [`computer-use`](../packages/computer-use/computer-use) |
 | [`experimental-forge-github`](../packages/experimental/forge-github) | `experimental` | [`experimental-forge`](../packages/experimental/forge), [`subprocess`](../packages/subprocess/subprocess) |
 | [`experimental-webworker-runtime`](../packages/experimental/webworker-runtime) | `experimental` | [`client-connection`](../packages/client/connection), [`client-modules`](../packages/client/modules), [`host-webserver`](../packages/host/webserver) |
@@ -1800,6 +1876,8 @@ flowchart TD
 | [`workspace-changes`](../packages/deliverables/workspace-changes) | `deliverables` | [`agent`](../packages/core/agent), [`fs`](../packages/fs/fs), [`session`](../packages/core/session), [`subprocess`](../packages/subprocess/subprocess), [`tools`](../packages/core/tools) |
 | [`action-cards`](../packages/experimental/action-cards) | `experimental` | [`llm`](../packages/llm/llm), [`session`](../packages/core/session), [`tools`](../packages/core/tools), [`typert-protocol`](../packages/typert/protocol) |
 | [`creation-recommendations`](../packages/experimental/creation-recommendations) | `experimental` | [`llm`](../packages/llm/llm), [`session`](../packages/core/session), [`skill`](../packages/skill/skill), [`tools`](../packages/core/tools) |
+| [`crew-connections`](../packages/experimental/crew-connections) | `experimental` | [`authorization`](../packages/credentials/authorization), [`credentials`](../packages/credentials/credentials), [`tools`](../packages/core/tools), [`typert-protocol`](../packages/typert/protocol) |
+| [`crew-stock-chart`](../packages/experimental/crew-stock-chart) | `experimental` | [`tools`](../packages/core/tools), [`typert-protocol`](../packages/typert/protocol) |
 | [`cua`](../packages/experimental/cua) | `experimental` | [`attachment`](../packages/attachment/attachment), [`ptc-runtime-node`](../packages/ptc-runtime/ptc-runtime-node), [`scope`](../packages/core/scope), [`user-questions`](../packages/interaction/user-questions) |
 | [`experimental-browser-use-chrome-devtools-mcp`](../packages/experimental/browser-use-chrome-devtools-mcp) | `experimental` | [`agent`](../packages/core/agent), [`browser-use`](../packages/browser-use/browser-use), [`system-prompt`](../packages/core/system-prompt), [`tools`](../packages/core/tools), [`working-directory`](../packages/session/working-directory) |
 | [`experimental-browser-use-playwright-mcp`](../packages/experimental/browser-use-playwright-mcp) | `experimental` | [`agent`](../packages/core/agent), [`browser-use`](../packages/browser-use/browser-use), [`system-prompt`](../packages/core/system-prompt), [`tools`](../packages/core/tools), [`working-directory`](../packages/session/working-directory) |
@@ -1835,6 +1913,8 @@ flowchart TD
 | [`session-query`](../packages/session-query/session-query) | `session-query` | [`brand`](../packages/util/brand), [`llm`](../packages/llm/llm), [`session`](../packages/core/session), [`session-persistence`](../packages/session/session-persistence), [`session-projection`](../packages/session/session-projection), [`session-projection-cache`](../packages/session/session-projection-cache), [`session-title`](../packages/session/session-title), [`tool-todo`](../packages/todo/tool-todo) |
 | [`api-settings-controller`](../packages/api/settings-controller) | `api` | [`agent-preset-registry`](../packages/preset/agent-preset-registry), [`credentials`](../packages/credentials/credentials), [`native-command`](../packages/util/native-command), [`session`](../packages/core/session), [`settings`](../packages/settings/settings), [`typert-protocol`](../packages/typert/protocol) |
 | [`web-app`](../packages/bundle/web-app) | `bundle` | [`shell-env`](../packages/shell/shell-env) |
+| [`crew-improve`](../packages/experimental/crew-improve) | `experimental` | [`agent-preset-registry`](../packages/preset/agent-preset-registry), [`llm`](../packages/llm/llm), [`message-feedback`](../packages/feedback/message-feedback), [`session`](../packages/core/session), [`system-prompt`](../packages/core/system-prompt), [`timeout`](../packages/util/timeout), [`typert-protocol`](../packages/typert/protocol) |
+| [`crew-today`](../packages/experimental/crew-today) | `experimental` | [`credentials`](../packages/credentials/credentials), [`crew-connections`](../packages/experimental/crew-connections), [`typert-protocol`](../packages/typert/protocol) |
 | [`experimental-auto-review`](../packages/experimental/auto-review) | `experimental` | [`agent`](../packages/core/agent), [`agent-instructions`](../packages/context/agent-instructions), [`llm`](../packages/llm/llm), [`permission-presets`](../packages/interaction/permission-presets), [`session`](../packages/core/session), [`tools`](../packages/core/tools), [`working-directory`](../packages/session/working-directory) |
 | [`experimental-forge-session`](../packages/experimental/forge-session) | `experimental` | [`experimental-forge`](../packages/experimental/forge), [`sandbox-policy`](../packages/sandbox/sandbox-policy), [`session`](../packages/core/session), [`session-projection`](../packages/session/session-projection), [`shell`](../packages/shell/shell), [`shell-env`](../packages/shell/shell-env), [`tools`](../packages/core/tools) |
 | [`webhook`](../packages/experimental/webhook) | `experimental` | [`agent`](../packages/core/agent), [`agent-default-model`](../packages/core/agent-default-model), [`agent-preset-registry`](../packages/preset/agent-preset-registry), [`llm`](../packages/llm/llm), [`permission-presets`](../packages/interaction/permission-presets), [`session`](../packages/core/session), [`session-title`](../packages/session/session-title), [`workspace`](../packages/workspace/workspace) |
@@ -1873,6 +1953,7 @@ flowchart TD
 | [`headless`](../packages/bundle/headless) | `bundle` | [`agent`](../packages/core/agent), [`agent-default-model`](../packages/core/agent-default-model), [`fs`](../packages/fs/fs), [`llm`](../packages/llm/llm), [`permission-presets`](../packages/interaction/permission-presets), [`sandbox-policy`](../packages/sandbox/sandbox-policy), [`session`](../packages/core/session), [`session-query`](../packages/session-query/session-query), [`subagent`](../packages/subagent/subagent), [`user-approval`](../packages/interaction/user-approval) |
 | [`compaction-basic`](../packages/compaction/compaction-basic) | `compaction` | [`agent`](../packages/core/agent), [`commands`](../packages/interaction/commands), [`compaction`](../packages/compaction/compaction), [`compaction-tool-result-pruner`](../packages/compaction/compaction-tool-result-pruner), [`llm`](../packages/llm/llm), [`session`](../packages/core/session), [`token-meter`](../packages/llm/token-meter) |
 | [`session-reference`](../packages/context/session-reference) | `context` | [`agent`](../packages/core/agent), [`compaction`](../packages/compaction/compaction), [`llm`](../packages/llm/llm), [`output-retention`](../packages/util/output-retention), [`session`](../packages/core/session), [`session-projection`](../packages/session/session-projection), [`session-projection-cache`](../packages/session/session-projection-cache), [`session-query`](../packages/session-query/session-query), [`session-title`](../packages/session/session-title), [`spill`](../packages/spill/spill), [`subagent`](../packages/subagent/subagent), [`system-prompt`](../packages/core/system-prompt), [`typert-protocol`](../packages/typert/protocol) |
+| [`crew-roster`](../packages/experimental/crew-roster) | `experimental` | [`agent`](../packages/core/agent), [`agent-preset-registry`](../packages/preset/agent-preset-registry), [`llm`](../packages/llm/llm), [`subagent`](../packages/subagent/subagent), [`tools`](../packages/core/tools), [`typert-protocol`](../packages/typert/protocol) |
 | [`experimental-subagent-oar`](../packages/experimental/subagent-oar) | `experimental` | [`llm`](../packages/llm/llm), [`session`](../packages/core/session), [`subagent`](../packages/subagent/subagent), [`subprocess`](../packages/subprocess/subprocess) |
 | [`experimental-tool-subagent-oar`](../packages/experimental/tool-subagent-oar) | `experimental` | [`subagent`](../packages/subagent/subagent), [`tools`](../packages/core/tools) |
 | [`hooks-claude-code`](../packages/experimental/hooks-claude-code) | `experimental` | [`agent`](../packages/core/agent), [`hook-protocol`](../packages/experimental/hook-protocol), [`llm`](../packages/llm/llm), [`session`](../packages/core/session), [`subagent`](../packages/subagent/subagent), [`tools`](../packages/core/tools), [`working-directory`](../packages/session/working-directory) |
@@ -1880,6 +1961,9 @@ flowchart TD
 | [`sdk-protocol`](../packages/sdk/protocol) | `sdk` | [`commands`](../packages/interaction/commands), [`llm`](../packages/llm/llm), [`session`](../packages/core/session), [`subagent`](../packages/subagent/subagent), [`user-questions`](../packages/interaction/user-questions) |
 | [`agent-team`](../packages/team/agent-team) | `team` | [`agent`](../packages/core/agent), [`llm`](../packages/llm/llm), [`session`](../packages/core/session), [`session-persistence`](../packages/session/session-persistence), [`session-projection`](../packages/session/session-projection), [`subagent`](../packages/subagent/subagent), [`typert-protocol`](../packages/typert/protocol) |
 | [`workflow-ptc`](../packages/workflow/workflow-ptc) | `workflow` | [`agent`](../packages/core/agent), [`llm`](../packages/llm/llm), [`ptc-runtime`](../packages/ptc-runtime/ptc-runtime), [`sandbox`](../packages/sandbox/sandbox), [`sandbox-policy`](../packages/sandbox/sandbox-policy), [`session`](../packages/core/session), [`subagent`](../packages/subagent/subagent), [`tools`](../packages/core/tools), [`workflow`](../packages/workflow/workflow), [`working-directory`](../packages/session/working-directory) |
+| [`crew-kanban`](../packages/experimental/crew-kanban) | `experimental` | [`agent`](../packages/core/agent), [`agent-team`](../packages/team/agent-team), [`subagent`](../packages/subagent/subagent), [`typert-protocol`](../packages/typert/protocol) |
+| [`crew-slack`](../packages/experimental/crew-slack) | `experimental` | [`api-session-controller`](../packages/api/session-controller), [`credentials`](../packages/credentials/credentials), [`crew-connections`](../packages/experimental/crew-connections), [`crew-roster`](../packages/experimental/crew-roster), [`session`](../packages/core/session), [`session-title`](../packages/session/session-title), [`typert-protocol`](../packages/typert/protocol) |
+| [`crew-workflows`](../packages/experimental/crew-workflows) | `experimental` | [`agent`](../packages/core/agent), [`api-session-controller`](../packages/api/session-controller), [`llm`](../packages/llm/llm), [`session`](../packages/core/session), [`session-title`](../packages/session/session-title), [`subagent`](../packages/subagent/subagent), [`tools`](../packages/core/tools), [`typert-protocol`](../packages/typert/protocol), [`util-values`](../packages/util/values) |
 | [`schedule`](../packages/schedule/schedule) | `schedule` | [`agent`](../packages/core/agent), [`api-session-controller`](../packages/api/session-controller), [`brand`](../packages/util/brand), [`llm`](../packages/llm/llm), [`session`](../packages/core/session), [`session-persistence`](../packages/session/session-persistence), [`session-projection`](../packages/session/session-projection), [`storage-domain`](../packages/storage/storage-domain), [`subagent`](../packages/subagent/subagent), [`tools`](../packages/core/tools), [`typert-protocol`](../packages/typert/protocol), [`util-time`](../packages/util/time), [`workspace`](../packages/workspace/workspace) |
 | [`sdk-client`](../packages/sdk/client) | `sdk` | [`llm`](../packages/llm/llm), [`sdk-protocol`](../packages/sdk/protocol), [`session`](../packages/core/session) |
 | [`tool-agent-team`](../packages/team/tool-agent-team) | `team` | [`agent`](../packages/core/agent), [`agent-team`](../packages/team/agent-team), [`session`](../packages/core/session), [`subagent`](../packages/subagent/subagent), [`system-prompt`](../packages/core/system-prompt), [`tools`](../packages/core/tools) |

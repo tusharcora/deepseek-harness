@@ -122,6 +122,7 @@ function mount(overrides: Partial<WorkspaceBrowserProps> = {}) {
     useContextMenuTarget: selector => selector(null),
     useShortcuts: select => select([]),
     useWorkspaceShortcuts: bindSnapshotSelector(controls.state),
+    useHiddenUngrouped: select => select(new Set()),
     requestSearch: controls.search,
     requestAddWorkspace: controls.add,
     closeAddWorkspace: controls.closeAdd,

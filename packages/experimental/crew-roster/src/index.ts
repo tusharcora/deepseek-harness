@@ -5,26 +5,37 @@
  */
 import { randomInt } from 'node:crypto'
 import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { basename, join } from 'node:path'
 import { Service, type Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
+import { z as zod } from 'zod'
 import { Remote, TypertRemoteService } from '@deepseek-ai/dsh-typert-protocol'
 import { writeFileAtomic } from '@deepseek-ai/dsh-atomic-write'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import type {} from '@deepseek-ai/dsh-agent-preset-registry'
 import type {} from '@deepseek-ai/dsh-subagent'
+import type { Workspace } from '@deepseek-ai/dsh-workspace'
+import type { ProjectionHandle } from '@deepseek-ai/dsh-session-projection'
+import type {} from '@deepseek-ai/dsh-goal'
 import type { PreToolDecision, ToolExecution } from '@deepseek-ai/dsh-tools'
 import { BUDGET_EXEMPT, budgetRefusal, capAbilities, idFor, MAX_MEMBERS, memberProblems, presetFor } from './compose.ts'
 import { CONNECTIONS, DEFAULT_MEMBERS, FACE_COLORS, SUPERSEDED_PERSONAS } from './defaults.ts'
+import { actionConcerns, appendAsked, ASKED_SOURCES, checkerReason, withConcerns } from './check.ts'
 import type { CrewMember, RosterResult, RosterState } from './types.ts'
 
 export type * from './types.ts'
-export { ASK_TOOL, BUDGET_EXEMPT, budgetRefusal, capAbilities, MAX_TOOL_CALLS, idFor, MAX_DEPTH, MAX_MEMBERS, MEMBER_ID, memberProblems, presetFor } from './compose.ts'
+export {
+  ASK_TOOL, BUDGET_EXEMPT, budgetRefusal, capAbilities, MAX_BACKSTORY, MAX_TOOL_CALLS, idFor, MAX_DEPTH, MAX_MEMBERS, MEMBER_ID,
+  memberProblems, presetFor, TONE_GUIDANCE,
+} from './compose.ts'
 export { CONNECTIONS, DEFAULT_MEMBERS, FACE_COLORS, SUPERSEDED_PERSONAS, type PluginRow } from './defaults.ts'
+export { actionConcerns, appendAsked, ASKED_SOURCES, checkerReason, MAX_ASKED, withConcerns } from './check.ts'
 
 /** Model-facing tool that adds a crew member. */
 export const CREATE_TOOL = 'crew_member_create'
+/** Name of the tool that lists the user's workspaces. */
+export const WORKSPACES_TOOL = 'crew_workspaces'
 
 declare module '@deepseek-ai/cordis' {
   interface Context {
@@ -89,6 +100,17 @@ function randomLetters(count: number): string {
   return Array.from({ length: count }, () => String.fromCharCode(97 + randomInt(26))).join('')
 }
 
+/**
+ * The workspace list as the model reads it.
+ * @param workspaces - registry records, or undefined without a registry.
+ * @returns one line per workspace, or why there is none.
+ */
+export function workspaceSummary(workspaces: readonly Pick<Workspace, 'title' | 'path'>[] | undefined): string {
+  if (workspaces === undefined) return 'This dsh keeps no workspace list.'
+  if (workspaces.length === 0) return 'The user has no workspaces yet.'
+  return workspaces.map(workspace => `- ${workspace.title.trim() === '' ? basename(workspace.path) : workspace.title}: ${workspace.path}`).join('\n')
+}
+
 /** Stores the crew and keeps one registered preset per member. */
 export class CrewRosterService extends TypertRemoteService {
   static inject = ['agentPresets', 'tools']
@@ -96,6 +118,8 @@ export class CrewRosterService extends TypertRemoteService {
   private members: readonly CrewMember[] = []
   private writes: Promise<unknown> = Promise.resolve()
   private readonly registered = new Map<string, () => Promise<void>>()
+  /** What each chat was asked, for the action checker; absent without the projection registry. */
+  private asked: ProjectionHandle<string> | undefined
   /** Tool calls made so far in the current turn, by Session id; only Sessions of budgeted members are counted. */
   private readonly calls = new Map<string, number>()
 
@@ -120,9 +144,11 @@ export class CrewRosterService extends TypertRemoteService {
     }, 'crew-roster.presets')
     await this.register()
     this.ctx.effect(() => this.ctx.tools.register(this.createTool()), 'crew-roster.create-tool')
+    this.ctx.effect(() => this.ctx.tools.register(this.workspacesTool()), 'crew-roster.workspaces-tool')
     this.ctx.on('session/event', (session, event) => { if (event.type === 'turn/start') this.calls.delete(session.id) })
     this.ctx.on('session/disposed', (session) => { this.calls.delete(session.id) })
-    this.ctx.on('tools/pre-execute', async (exec, next) => this.overBudget(exec) ?? await next())
+    this.registerAsked()
+    this.ctx.on('tools/pre-execute', async (exec, next) => this.overBudget(exec) ?? this.checked(exec, await next()))
   }
 
   private get path(): string {
@@ -165,7 +191,8 @@ export class CrewRosterService extends TypertRemoteService {
     this.registered.clear()
     for (const member of this.members) {
       try {
-        this.registered.set(member.id, await this.ctx.agentPresets.register(presetFor(member, this.members)))
+        const credentials = this.ctx.get('credentials') !== undefined
+        this.registered.set(member.id, await this.ctx.agentPresets.register(presetFor(member, this.members, process.platform, credentials)))
       } catch (error: unknown) {
         this.ctx.logger.warn(`crew-roster: preset ${member.id} not registered: ${String(error)}`)
       }
@@ -259,10 +286,61 @@ export class CrewRosterService extends TypertRemoteService {
     return used > limit ? { kind: 'deny', reason: budgetRefusal(member, limit) } : undefined
   }
 
+  /** Keep, per chat, what it was asked: the user's words and handed-over tasks, never tool output. */
+  private registerAsked(): void {
+    const projections = this.ctx.get('sessionProjections')
+    if (projections === undefined) return
+    const ready = projections.register({
+      key: 'crewAsked',
+      stateVersion: 1,
+      stateSchema: zod.string(),
+      init: () => '',
+      apply: (state, event) => {
+        if (event.type !== 'user/message' || !ASKED_SOURCES.has(event.data.source.kind)) return state
+        const text = event.data.content.flatMap(block => block.type === 'text' ? [block.text] : []).join('\n').trim()
+        return text === '' ? state : appendAsked(state, text)
+      },
+    })
+    void ready.then((handle) => { this.asked = handle }, (error: unknown) => {
+      this.ctx.logger.warn(`crew-roster: action checker has no history: ${String(error)}`)
+    })
+  }
+
+  /**
+   * Add the action checker's concerns to the decision the rest of the pipeline reached. A refusal stands; a call that would
+   * run, or already asks, asks with the concerns first, so the user sees one prompt that says what looks off.
+   */
+  private checked(exec: ToolExecution, decision: PreToolDecision): PreToolDecision {
+    if (decision.kind === 'deny' || decision.kind === 'cancel') return decision
+    const member = this.memberOf(exec.agent)
+    if (member === undefined || exec.agent === undefined) return decision
+    const goal = this.ctx.get('goals')?.get(exec.agent)?.objective ?? ''
+    const asked = `${this.asked?.stateOf(exec.agent.session) ?? ''}\n${goal}`
+    const concerns = actionConcerns(exec.name, exec.arguments, asked)
+    if (concerns.length === 0) return decision
+    return withConcerns(decision, checkerReason(member.name, concerns))
+  }
+
   /** The member a Session runs as, when it runs a crew preset. */
   private memberOf(agent: Agent | undefined): CrewMember | undefined {
     const preset = agent === undefined ? null : this.ctx.agentPresets.presetForSession(agent.session)
     return this.members.find(member => member.id === preset)
+  }
+
+  private workspacesTool() {
+    return defineTool({
+      name: WORKSPACES_TOOL,
+      description: 'List the user\'s workspaces (project folders) with their paths. Read files in one by its path, or enter it '
+        + 'with working_directory. Changes outside the folder your chat started in ask the user first.',
+      parameters: {},
+      isConcurrencySafe: () => true,
+      output: {
+        schema: { type: 'object', additionalProperties: false, properties: { summary: { type: 'string', required: true } } },
+        render: (_args, value) => [{ type: 'text', text: value.summary }],
+      },
+      // Optional: a dsh without the workspace registry has no workspaces to list.
+      execute: async () => ({ summary: workspaceSummary(this.ctx.get('workspaceRegistry')?.list()) }),
+    })
   }
 
   private createTool() {

@@ -255,6 +255,8 @@ export interface SessionRowState {
   archivedSessionIds: readonly SessionId[]
   /** Archived-row visibility choice applied to lists and search alike. */
   archivedFilter: ArchivedFilter
+  /** Sessions other plugins keep out of the Ungrouped bucket, which list them on a surface of their own. */
+  hiddenUngroupedIds?: ReadonlySet<SessionId>
 }
 
 /**
@@ -328,6 +330,7 @@ function groupByWorkspace(
   archived: ReadonlySet<SessionId>,
   archivedFilter: ArchivedFilter,
   ungroupedOrder: readonly string[] | undefined,
+  hiddenUngrouped: ReadonlySet<SessionId> = new Set(),
 ): Group[] {
   const current = mainSessionId(list)
   const groups: Group[] = []
@@ -352,7 +355,8 @@ function groupByWorkspace(
   const stray = list.ids
     .map(id => list.byId[id])
     .filter((s): s is SessionSummary =>
-      s !== undefined && !accounted.has(s.id) && sessionVisible(s, current, archived, archivedFilter))
+      s !== undefined && !accounted.has(s.id) && !hiddenUngrouped.has(s.id)
+      && sessionVisible(s, current, archived, archivedFilter))
   if (stray.length > 0) {
     groups.push(buildGroup(
       UNGROUPED_KEY,
@@ -440,7 +444,7 @@ export function deriveGroups(
     ? undefined
     : owningGroupKey(workspaces, current)
   const groups: GroupNode[] = []
-  for (const g of groupByWorkspace(list, workspaces, archived, rowState.archivedFilter, view.ungroupedOrder)) {
+  for (const g of groupByWorkspace(list, workspaces, archived, rowState.archivedFilter, view.ungroupedOrder, rowState.hiddenUngroupedIds)) {
     const expanded = expandedGroups.has(g.key)
     groups.push({
       key: g.key,

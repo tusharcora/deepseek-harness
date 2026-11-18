@@ -9,6 +9,20 @@ import type { CrewMember, RosterResult, RosterState } from '@deepseek-ai/dsh-cre
 import { crewRoster, sameRoster, type CrewMemberId, type CrewMemberState, type RosterEntry } from '../roster.ts'
 import { en } from './locales.ts'
 
+/**
+ * The most recently updated workspace: where a member's chat opens on a dsh whose composer cannot run a chat
+ * outside any workspace.
+ * @param snapshot - workspace list.
+ * @returns the workspace id, or undefined when there is none.
+ */
+export function latestWorkspace(snapshot: WorkspaceSnapshot): WorkspaceId | undefined {
+  let latest: WorkspaceSnapshot['items'][number] | undefined
+  for (const item of snapshot.items) {
+    if (latest === undefined || Date.parse(item.updatedAt) > Date.parse(latest.updatedAt)) latest = item
+  }
+  return latest?.workspaceId
+}
+
 /** What the roster asks the rest of the client to do. */
 export interface CrewActions {
   /**
@@ -196,9 +210,31 @@ export class CrewRoster {
    * @returns whether a chat was opened.
    */
   async openChat(id: CrewMemberId): Promise<boolean> {
-    const focus = this.members.getSnapshot().find(member => member.id === id)?.focus
-    if (focus !== undefined) {
-      this.actions.openSession(focus)
+    return await this.openOrCreate(id, this.members.getSnapshot().find(member => member.id === id)?.focus)
+  }
+
+  /**
+   * Open the member's own chat, the one Session it keeps outside any workspace, creating it the first time; the Crew tab
+   * always returns here, whatever else the member is doing.
+   * @param id - member id.
+   * @returns whether a chat was opened.
+   */
+  async openHome(id: CrewMemberId): Promise<boolean> {
+    return await this.openOrCreate(id, this.members.getSnapshot().find(member => member.id === id)?.home)
+  }
+
+  /**
+   * The member's own chat, created the first time, without opening it; routines deliver into it.
+   * @param id - member id.
+   * @returns the Session, or undefined when it could not be created.
+   */
+  async homeFor(id: CrewMemberId): Promise<SessionId | undefined> {
+    return this.members.getSnapshot().find(member => member.id === id)?.home ?? await this.actions.createChat(id)
+  }
+
+  private async openOrCreate(id: CrewMemberId, existing: SessionId | undefined): Promise<boolean> {
+    if (existing !== undefined) {
+      this.actions.openSession(existing)
       return true
     }
     const created = await this.actions.createChat(id)
